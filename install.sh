@@ -234,13 +234,13 @@ function install_bot() {
     fi
     
     # Default repository URL
-    REPO_URL="https://github.com/mahdiMGF2/botmirzapanel.git"
+    REPO_URL="https://github.com/CokieG/botmirzapanelrueng.git"
 
     # Check for version flag
     if [[ "$1" == -v* ]]; then
         VERSION=$(echo "$1" | sed 's/-v//')
         REPO_URL="https://github.com/mahdiMGF2/botmirzapanel/archive/refs/tags/$VERSION.zip"
-    elif [[ "$1" == "-v" && -n "$2" ]]; then
+    elif [[ "$1" == "-v" && -n "$2" ]]; then    
         VERSION="$2"
         REPO_URL="https://github.com/mahdiMGF2/botmirzapanel/archive/refs/tags/$VERSION.zip"
     fi
@@ -639,7 +639,7 @@ function update_bot() {
     fi
 
     # Clone the new version of the bot
-    if ! git clone https://github.com/mahdiMGF2/botmirzapanel.git /var/www/html/mirzabotconfig; then
+    if ! git clone https://github.com/CokieG/botmirzapanelrueng.git /var/www/html/mirzabotconfig; then
         echo -e "\e[91mFailed to clone the repository. Exiting...\033[0m"
         exit 1
     fi
@@ -1040,7 +1040,7 @@ EOF"
     # Clone a Fresh Copy of the Bot's Source Code
     BOT_DIR="/var/www/html/$BOT_NAME"
     echo -e "\033[33mCloning bot's source code...\033[0m"
-    git clone https://github.com/mahdiMGF2/botmirzapanel.git "$BOT_DIR" || {
+    git clone https://github.com/CokieG/botmirzapanelrueng.git "$BOT_DIR" || {
         echo -e "\033[31mError: Failed to clone the repository.\033[0m"
         return 1
     }
@@ -1206,7 +1206,7 @@ function update_additional_bot() {
     fi
 
     # Clone the new version of the bot
-    if ! git clone https://github.com/mahdiMGF2/botmirzapanel.git "$BOT_PATH"; then
+    if ! git clone https://github.com/CokieG/botmirzapanelrueng.git "$BOT_PATH"; then
         echo -e "\033[31mFailed to clone the repository. Exiting...\033[0m"
         return 1
     fi
