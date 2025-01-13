@@ -568,56 +568,55 @@ try {
     $result = $connect->query("SHOW TABLES LIKE 'textbot'");
     $table_exists = ($result->num_rows > 0);
     $text_roll = "
-♨️ قوانین استفاده از خدمات ما
+️ ️ Правила пользования нашими услугами
 
-1- به اطلاعیه هایی که داخل کانال گذاشته می شود حتما توجه کنید.
-2- در صورتی که اطلاعیه ای در مورد قطعی در کانال گذاشته نشده به اکانت پشتیبانی پیام دهید
-3- سرویس ها را از طریق پیامک ارسال نکنید برای ارسال پیامک می توانید از طریق ایمیل ارسال کنید.
+Обязательно обращайте внимание на объявления, размещенные внутри канала.
+Если на канале нет уведомления о сбое, отправьте сообщение в службу поддержки.
     ";
     $text_dec_fq = " 
- 💡 سوالات متداول ⁉️
+💡 Часто задаваемые вопросы ⁉️
 
-1️⃣ فیلترشکن شما آیپی ثابته؟ میتونم برای صرافی های ارز دیجیتال استفاده کنم؟
+1️⃣ Ваш VPN имеет статический IP? Могу ли я использовать его для криптовалютных бирж?
 
-✅ به دلیل وضعیت نت و محدودیت های کشور سرویس ما مناسب ترید نیست و فقط لوکیشن‌ ثابته.
+✅ Из-за состояния сети и ограничений в стране наш сервис не подходит для трейдинга, только локация остается постоянной.
 
-2️⃣ اگه قبل از منقضی شدن اکانت، تمدیدش کنم روزهای باقی مانده می سوزد؟
+2️⃣ Если я продлю аккаунт до истечения срока, оставшиеся дни сгорят?
 
-✅ خیر، روزهای باقیمونده اکانت موقع تمدید حساب میشن و اگه مثلا 5 روز قبل از منقضی شدن اکانت 1 ماهه خودتون اون رو تمدید کنید 5 روز باقیمونده + 30 روز تمدید میشه.
+✅ Нет, оставшиеся дни будут учтены при продлении, и если, например, вы продлите свой месячный аккаунт за 5 дней до истечения срока, оставшиеся 5 дней + 30 дней продления будут добавлены.
 
-3️⃣ اگه به یک اکانت بیشتر از حد مجاز متصل شیم چه اتفاقی میافته؟
+3️⃣ Что произойдет, если подключиться к одному аккаунту больше допустимого количества раз?
 
-✅ در این صورت حجم سرویس شما زود تمام خواهد شد.
+✅ В этом случае объем вашего сервиса быстро закончится.
 
-4️⃣ فیلترشکن شما از چه نوعیه؟
+4️⃣ Какой тип VPN вы используете?
 
-✅ فیلترشکن های ما v2ray است و پروتکل‌های مختلفی رو ساپورت میکنیم تا حتی تو دورانی که اینترنت اختلال داره بدون مشکل و افت سرعت بتونید از سرویستون استفاده کنید.
+✅ Наши VPN - это v2ray, и мы поддерживаем различные протоколы, чтобы вы могли использовать свой сервис без проблем и снижения скорости даже в периоды сбоев в интернете.
 
-5️⃣ فیلترشکن از کدوم کشور است؟
+5️⃣ Из какой страны ваш VPN?
 
-✅ سرور فیلترشکن ما از کشور  آلمان است
+✅ Наш VPN-сервер находится в Германии.
 
-6️⃣ چطور باید از این فیلترشکن استفاده کنم؟
+6️⃣ Как мне использовать этот VPN?
 
-✅ برای آموزش استفاده از برنامه، روی دکمه «📚 آموزش» بزنید.
+✅ Для обучения по использованию программы нажмите кнопку «📚 Обучение».
 
-7️⃣ فیلترشکن وصل نمیشه، چیکار کنم؟
+7️⃣ VPN не подключается, что делать?
 
-✅ به همراه یک عکس از پیغام خطایی که میگیرید به پشتیبانی مراجعه کنید.
+✅ Обратитесь в поддержку с фотографией сообщения об ошибке, которую вы получаете.
 
-8️⃣ فیلترشکن شما تضمینی هست که همیشه مواقع متصل بشه؟
+8️⃣ Гарантируете ли вы, что VPN всегда будет подключаться?
 
-✅ به دلیل قابل پیش‌بینی نبودن وضعیت نت کشور، امکان دادن تضمین نیست فقط می‌تونیم تضمین کنیم که تمام تلاشمون رو برای ارائه سرویس هر چه بهتر انجام بدیم.
+✅ Из-за непредсказуемого состояния сети в стране мы не можем дать гарантию, но можем гарантировать, что приложим все усилия для предоставления наилучшего сервиса.
 
-9️⃣ امکان بازگشت وجه دارید؟
+9️⃣ Возможен ли возврат средств?
 
-✅ امکان بازگشت وجه در صورت حل نشدن مشکل از سمت ما وجود دارد.
+✅ Возврат средств возможен, если проблема не будет решена с нашей стороны.
 
-💡 در صورتی که جواب سوالتون رو نگرفتید میتونید به «پشتیبانی» مراجعه کنید.";
+💡 Если вы не нашли ответ на свой вопрос, вы можете обратиться в «Поддержку».
     $text_channel = "   
-        ⚠️ کاربر گرامی؛ شما عضو چنل ما نیستید
-از طریق دکمه زیر وارد کانال شده و عضو شوید
-پس از عضویت دکمه بررسی عضویت را کلیک کنید";
+        ⚠️ Уважаемый пользователь, вы не являетесь членом нашего канала.
+Пожалуйста, присоединитесь к каналу, нажав на кнопку ниже.
+После присоединения нажмите кнопку проверки членства.";
     if (!$table_exists) {
         $result = $connect->query("CREATE TABLE textbot (
         id_text varchar(600) PRIMARY KEY NOT NULL,
@@ -626,42 +625,42 @@ try {
         if (!$result) {
             echo "table textbot".mysqli_error($connect);
         }
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_start','سلام خوش آمدید') ");
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_usertest','🔑 اکانت تست')");
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_Purchased_services','🛍 سرویس های من')");
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_support','☎️ پشتیبانی')");
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_help','📚 آموزش')");
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_bot_off','❌ ربات خاموش است، لطفا دقایقی دیگر مراجعه کنید')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_start','Здравствуйте, добро пожаловать')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_usertest','🔑 Тестовый аккаунт')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_Purchased_services','🛍 Мои сервисы')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_support','☎️ Поддержка')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_help','📚 Обучение')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_bot_off','❌ Бот выключен, пожалуйста, попробуйте позже')");
         $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_roll','$text_roll')");
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_fq','❓ سوالات متداول')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_fq','❓ Часто задаваемые вопросы')");
         $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_dec_fq','$text_dec_fq')");
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_account','👨🏻‍💻 مشخصات کاربری')");
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_sell','🔐 خرید اشتراک')");
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_Add_Balance','💰 افزایش موجودی')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_account','👨🏻‍💻 Пользовательские данные')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_sell','🔐 Купить подписку')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_Add_Balance','💰 Пополнить баланс')");
         $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_channel','$text_channel')");
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_Discount','🎁 کد هدیه')");
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_Tariff_list','💰 تعرفه اشتراک ها')");
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_dec_Tariff_list','تنظیم نشده است')");
-        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_Account_op','🎛 حساب کاربری')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_Discount','🎁 Подарочный код')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_Tariff_list','💰 Тарифы подписок')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_dec_Tariff_list','Не настроено')");
+        $connect->query("INSERT INTO textbot (id_text,text) VALUES ('text_Account_op','🎛 Управление аккаунтом')");
     }
     else{
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_start','سلام خوش آمدید')");
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_usertest','🔑 اکانت تست')");
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_Purchased_services','🛍 سرویس های من')");
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_support','☎️ پشتیبانی')");
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_help','📚 آموزش')");
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_bot_off','❌ ربات خاموش است، لطفا دقایقی دیگر مراجعه کنید')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_start','Здравствуйте, добро пожаловать')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_usertest','🔑 Тестовый аккаунт')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_Purchased_services','🛍 Мои сервисы')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_support','☎️ Поддержка')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_help','📚 Обучение')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_bot_off','❌ Бот выключен, пожалуйста, попробуйте позже')");
         $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_roll','$text_roll')");
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_fq','❓ سوالات متداول')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_fq','❓ Часто задаваемые вопросы')");
         $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_dec_fq','$text_dec_fq')");
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_account','👨🏻‍💻 مشخصات کاربری')");
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_sell','🔐 خرید اشتراک')");
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_Add_Balance','💰 افزایش موجودی')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_account','👨🏻‍💻 Пользовательские данные')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_sell','🔐 Купить подписку')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_Add_Balance','💰 Пополнить баланс')");
         $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_channel','$text_channel')");
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_Discount','🎁 کد هدیه')");
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_Tariff_list','💰 تعرفه اشتراک ها')");
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_dec_Tariff_list','تنظیم نشده است')");
-        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_Account_op','🎛 حساب کاربری')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_Discount','🎁 Подарочный код')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_Tariff_list','💰 Тарифы подписок')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_dec_Tariff_list','Не настроено')");
+        $connect->query("INSERT IGNORE INTO textbot (id_text,text) VALUES ('text_Account_op','🎛 Управление аккаунтом')");
 
 
     }

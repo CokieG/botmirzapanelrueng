@@ -47,19 +47,19 @@ if ($result->code == "1") {
     update("user","Processing_value_one","0", "id",$Balance_id['id']);
     update("user","Processing_value_tow","0", "id",$Balance_id['id']);
     update("Payment_report","payment_Status","paid","id_order",$Payment_report['id_order']);
-$text_report = "💵 پرداخت جدید
+$text_report = "💵 Новый платеж
         
-آیدی عددی کاربر : {$Payment_report['id_user']}
-مبلغ تراکنش $price
-روش پرداخت :  درگاه آقای پرداخت";
+Числовой ID пользователя: {$Payment_report['id_user']}
+Сумма транзакции: $price
+Способ оплаты: через Aqayepardakht";
     if (strlen($setting['Channel_Report']) > 0) {
         sendmessage($setting['Channel_Report'], $text_report, null, 'HTML');
     }
 }
 }else {
         $payment_status = [
-        '0' => "پرداخت انجام نشد",
-        '2' => "تراکنش قبلا وریفای و پرداخت شده است",
+        '0' => "Платеж не выполнен",
+        '2' => "Транзакция уже проверена и оплачена",
 
     ][$result->code];
      $dec_payment_status = "";
@@ -67,7 +67,7 @@ $text_report = "💵 پرداخت جدید
 ?>
 <html>
 <head>
-    <title>فاکتور پرداخت</title>
+    <title>Счет на оплату</title>
     <style>
     @font-face {
     font-family: 'vazir';

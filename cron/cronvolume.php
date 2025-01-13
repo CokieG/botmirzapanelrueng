@@ -23,14 +23,14 @@ while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $Response = json_encode([
             'inline_keyboard' => [
                 [
-                    ['text' => "💊 تمدید سرویس", 'callback_data' => 'extend_' . $resultss['username']],
+                    ['text' => "💊 Продлить услугу", 'callback_data' => 'extend_' . $resultss['username']],
                 ],
             ]
         ]);
         $bytewarn = 1  * pow(1024, 3);
         if ($output <= $bytewarn && $output > 0 && $get_username_Check['status'] == "active") {
-            $text = "با سلام خدمت شما کاربر گرامی 👋
-🚨 از حجم سرویس $line تنها $RemainingVolume باقی مانده است. لطفاً در صورت تمایل برای خرید حجم اضافه و یا تمدید سرویستون از طریق بخش «{$textservice}» اقدام بفرمایین";
+            $text = "Здравствуйте, уважаемый пользователь 👋
+🚨 Осталось всего $RemainingVolume от объема вашего сервиса $line. Пожалуйста, при необходимости приобретите дополнительный объем или продлите ваш сервис через раздел «{$textservice}»";
             sendmessage($resultss['id_user'], $text, $Response, 'HTML');
             if($resultss['Status'] === "end_of_time"){
                 update("invoice","Status","sendedwarn", "username",$line);

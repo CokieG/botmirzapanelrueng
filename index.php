@@ -10,7 +10,7 @@ if (function_exists('fastcgi_finish_request')) {
 
 ini_set('error_log', 'error_log');
 $version = "4.11.2";
-date_default_timezone_set('Asia/Tehran');
+date_default_timezone_set('Europe/Kaliningrad');
 require_once 'config.php';
 require_once 'botapi.php';
 require_once 'apipanel.php';
@@ -28,7 +28,7 @@ use Endroid\QrCode\Writer\PngWriter;
 $first_name = sanitizeUserName($first_name);
 if(!in_array($Chat_type,["private"]))return;
 #-----------telegram_ip_ranges------------#
-if (!checktelegramip()) die("دسترسی غیرمجاز");
+if (!checktelegramip()) die("Несанкционированный доступ");
 #-------------Variable----------#
 $users_ids = select("user", "id",null,null,"FETCH_COLUMN");
 $setting = select("setting", "*");
@@ -37,15 +37,15 @@ if(!in_array($from_id,$users_ids) && intval($from_id) != 0){
     $Response = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => "ارسال پیام به کاربر", 'callback_data' => 'Response_' . $from_id],
+                ['text' => "Отправить сообщение пользователю", 'callback_data' => 'Response_' . $from_id],
             ]
         ]
     ]);
     $newuser = "
-    🎉یک کاربر جدید ربات را استارت کرد
-نام : $first_name
-نام کاربری : @$username
-آیدی عددی : <a href = \"tg://user?id=$from_id\">$from_id</a>";
+    🎉Новый пользователь запустил бота
+Имя: $first_name
+Имя пользователя: @$username
+Числовой ID: <a href = \"tg://user?id=$from_id\">$from_id</a>";
     foreach ($admin_ids as $admin) {
         sendmessage($admin, $newuser, $Response, 'html');
     }
@@ -140,16 +140,16 @@ if ($user['username'] == "none" || $user['username'] == null) {
 #-----------User_Status------------#
 if ($user['User_Status'] == "block") {
     $textblock = "
-🚫 شما از طرف مدیریت بلاک شده اید.
+🚫 Вы заблокированы администрацией.
                     
-✍️ دلیل مسدودی: {$user['description_blocking']}
+✍️ Причина блокировки: {$user['description_blocking']}
                     ";
     sendmessage($from_id, $textblock, null, 'html');
     return;
 }
 if (strpos($text, "/start ") !== false) {
     if ($user['affiliates'] != 0) {
-        sendmessage($from_id, "❌ شما زیرمجموعه کاربر {$user['affiliates']} هستید و نمی توانید زیر مجموعه کاربری دیگه ای باشید", null, 'html');
+        sendmessage($from_id, "❌ Вы уже являетесь рефералом пользователя {$user['affiliates']} и не можете быть рефералом другого пользователя", null, 'html');
         return;
     }
     $affiliatesvalue = select("affiliates", "*", null, null, "select")['affiliatesstatus'];
@@ -174,7 +174,7 @@ if (strpos($text, "/start ") !== false) {
             $Balance_add_user = $Balance_user['Balance'] + $marzbanDiscountaffiliates['price_Discount'];
             update("user", "Balance", $Balance_add_user, "id", $affiliatesid);
             $addbalancediscount = number_format($marzbanDiscountaffiliates['price_Discount'], 0);
-            sendmessage($affiliatesid, "🎁 مبلغ $addbalancediscount به موجودی شما از طرف زیر مجموعه با شناسه کاربری $from_id اضافه گردید.", null, 'html');
+            sendmessage($affiliatesid, "🎁 Сумма $addbalancediscount была добавлена к вашему балансу от реферала с идентификатором $from_id.", null, 'html');
         }
         sendmessage($from_id, $datatextbot['text_start'], $keyboard, 'html');
         $useraffiliates = select("user", "*", "id", $affiliatesid, "select");
@@ -201,11 +201,11 @@ if (floor($TimeLastMessage / 60) >= 1) {
         }
 
     }
-    if($setting['Bot_Status'] == "✅  ربات روشن است" and !in_array($from_id, $admin_ids)) {
-        sendmessage($from_id, "❌ ربات درحال بروزرسانی است ساعتی دیگر مراجعه کنید", null, 'html');
+    if($setting['Bot_Status'] == "✅  Режим бота включен" and !in_array($from_id, $admin_ids)) {
+        sendmessage($from_id, "❌ Бот обновляется, пожалуйста, попробуйте позже", null, 'html');
         return;
-    }elseif($setting['Bot_Status'] == "❌ ربات خاموش است" and !in_array($from_id, $admin_ids))  {
-        sendmessage($from_id, "❌ ربات درحال بروزرسانی است ساعتی دیگر مراجعه کنید", null, 'html');
+    }elseif($setting['Bot_Status'] == "❌ Режим бота выключен" and !in_array($from_id, $admin_ids))  {
+        sendmessage($from_id, "❌ Бот обновляется, пожалуйста, попробуйте позже", null, 'html');
         return;
     }
 
@@ -245,11 +245,11 @@ if (!in_array($tch, ['member', 'creator', 'administrator']) && $channels['Channe
     return;
 }
 #-----------roll------------#
-if ($setting['roll_Status'] == "1" && $user['roll_Status'] == 0 && $text != "✅ قوانین را می پذیرم" && !in_array($from_id, $admin_ids)) {
+if ($setting['roll_Status'] == "1" && $user['roll_Status'] == 0 && $text != "✅ Я принимаю правила" && !in_array($from_id, $admin_ids)) {
     sendmessage($from_id, $datatextbot['text_roll'], $confrimrolls, 'html');
     return;
 }
-if ($text == "✅ قوانین را می پذیرم") {
+if ($text == "✅ Я принимаю правила") {
     sendmessage($from_id, $textbotlang['users']['Rules'], $keyboard, 'html');
     $confrim = true;
     update("user", "roll_Status", $confrim, "id", $from_id);
@@ -288,7 +288,7 @@ if ($text == "/start") {
     return;
 }
 #-----------back------------#
-if ($text == "🏠 بازگشت به منوی اصلی" || $datain == "backuser") {
+if ($text == "🏠 Вернуться в главное меню" || $datain == "backuser") {
     update("user","Processing_value","0", "id",$from_id);
     update("user","Processing_value_one","0", "id",$from_id);
     update("user","Processing_value_tow","0", "id",$from_id);
@@ -615,16 +615,16 @@ if (preg_match('/product_(\w+)/', $datain, $dataget)) {
                 ]
             ]
         ]);
-        $textinfo = "وضعیت سرویس : $status_var
-نام کاربری سرویس : {$DataUserOut['username']}
-لوکیشن :{$nameloc['Service_location']}
-کد سرویس:{$nameloc['id_invoice']}
-    
-📥 حجم مصرفی : $usedTrafficGb
-♾ حجم سرویس : $LastTraffic
+        $textinfo = "Статус сервиса: $status_var
+    Имя пользователя сервиса: {$DataUserOut['username']}
+    Локация: {$nameloc['Service_location']}
+    Код сервиса: {$nameloc['id_invoice']}
+        
+    📥 Использованный объем: $usedTrafficGb
+    ♾ Объем сервиса: $LastTraffic
 
-📅 فعال تا تاریخ : $expirationDate ($day)
-";
+    📅 Активен до: $expirationDate ($day)
+    ";
 
     }else{
         $keyboardsetting = json_encode([
@@ -646,19 +646,19 @@ if (preg_match('/product_(\w+)/', $datain, $dataget)) {
                 ]
             ]
         ]);
-        $textinfo = "وضعیت سرویس : $status_var
-نام کاربری سرویس : {$DataUserOut['username']}
-لوکیشن :{$nameloc['Service_location']}
-کد سرویس:{$nameloc['id_invoice']}
-    
-🟢 اخرین زمان اتصال شما : $lastonline
-    
-📥 حجم مصرفی : $usedTrafficGb
-♾ حجم سرویس : $LastTraffic
+        $textinfo = "Статус сервиса: $status_var
+    Имя пользователя сервиса: {$DataUserOut['username']}
+    Локация: {$nameloc['Service_location']}
+    Код сервиса: {$nameloc['id_invoice']}
+        
+    🟢 Последнее время подключения: $lastonline
+        
+    📥 Использованный объем: $usedTrafficGb
+    ♾ Объем сервиса: $LastTraffic
 
-📅 فعال تا تاریخ : $expirationDate ($day)
-    
-🚫 برای تغییر لینک و قطع دسترسی دیگران کافیست روی گزینه ' بروزرسانی اشتراک ' کلیک کنید.";
+    📅 Активен до: $expirationDate ($day)
+        
+    🚫 Для изменения ссылки и отключения доступа другим пользователям нажмите 'Обновить подписку'.";
     }
     Editmessagetext($from_id, $message_id, $textinfo, $keyboardsetting);
 }
@@ -761,17 +761,17 @@ if (preg_match('/subscriptionurl_(\w+)/', $datain, $dataget)) {
             ]
         ]
     ]);
-    $textextend = "🧾 فاکتور تمدید شما برای نام کاربری {$nameloc['username']} ایجاد شد.
+    $textextend = "🧾 Ваш счет на продление для имени пользователя {$nameloc['username']} создан.
             
-🛍 نام محصول :  {$product['name_product']}
-مبلغ تمدید :  {$product['price_product']}
-مدت زمان تمدید : {$product['Service_time']} روز
-حجم تمدید : {$product['Volume_constraint']} گیگ
+🛍 Название продукта:  {$product['name_product']}
+Сумма продления:  {$product['price_product']}
+Срок продления: {$product['Service_time']} дней
+Объем продления: {$product['Volume_constraint']} ГБ
             
             
-✅ برای تایید و تمدید سرویس روی دکمه زیر کلیک کنید
+✅ Для подтверждения и продления услуги нажмите кнопку ниже
             
-❌ برای تمدید باید کیف پول خود را شارژ کنید.";
+❌ Для продления необходимо пополнить кошелек.";
     Editmessagetext($from_id, $message_id, $textextend, $keyboardextend);
 } elseif (preg_match('/confirmserivce-(.*)/', $datain, $dataget)) {
     $codeproduct = $dataget[1];
@@ -873,17 +873,17 @@ if (preg_match('/subscriptionurl_(\w+)/', $datain, $dataget)) {
     $priceproductformat = number_format($product['price_product']);
     $balanceformatsell = number_format(select("user", "Balance", "id", $from_id, "select")['Balance']);
     sendmessage($from_id, $textbotlang['users']['extend']['thanks'], $keyboardextendfnished, 'HTML');
-    $text_report = "⭕️ یک کاربر سرویس خود را تمدید کرد.
+    $text_report = "⭕️ Пользователь продлил свою услугу.
             
-    اطلاعات کاربر : 
+    Информация о пользователе : 
             
-🪪 آیدی عددی : <code>$from_id</code>
-🪪  نام کاربری : @$username
-🛍 نام محصول :  {$product['name_product']}
-💰 مبلغ تمدید $priceproductformat تومان
-👤 نام کاربری مشتری در پنل  : $usernamepanel
-موجودی کاربر : $balanceformatsell تومان
-لوکیشن سرویس کاربر : {$nameloc['Service_location']}";
+🪪 Числовой ID : <code>$from_id</code>
+🪪 Имя пользователя : @$username
+🛍 Название продукта :  {$product['name_product']}
+💰 Сумма продления $priceproductformat рублей
+👤 Имя пользователя клиента в панели : $usernamepanel
+Баланс пользователя : $balanceformatsell рублей
+Локация услуги пользователя : {$nameloc['Service_location']}";
     if (isset($setting['Channel_Report']) &&strlen($setting['Channel_Report']) > 0) {
         sendmessage($setting['Channel_Report'], $text_report, null, 'HTML');
     }
@@ -908,7 +908,7 @@ if (preg_match('/subscriptionurl_(\w+)/', $datain, $dataget)) {
 } elseif (preg_match('/Extra_volume_(\w+)/', $datain, $dataget)) {
     $username = $dataget[1];
     update("user", "Processing_value", $username, "id", $from_id);
-    $textextra = " ⭕️ مقدار حجمی که میخواهید خریداری کنید را ارسال کنید.
+    $textextra = " ⭕️ Укажите объем, который вы хотите приобрести.
     
 ⚠️ هر گیگ حجم اضافه  {$setting['Extra_volume']} است.";
     sendmessage($from_id, $textextra, $backuser, 'HTML');
@@ -932,13 +932,13 @@ if (preg_match('/subscriptionurl_(\w+)/', $datain, $dataget)) {
     ]);
     $priceextra = number_format($priceextra);
     $setting['Extra_volume'] = number_format($setting['Extra_volume']);
-    $textextra = "📇 فاکتور خرید حجم اضافه برای شما ایجاد شد.
+    $textextra = "📇 Счет на покупку дополнительного объема был создан для вас.
     
-💰 قیمت هر گیگابایت حجم اضافه :  {$setting['Extra_volume']} تومان
-📝 مبلغ  فاکتور شما :  $priceextra تومان
-📥 حجم اضافه درخواستی : $text  گیگابایت
+💰 Цена за каждый гигабайт дополнительного объема: {$setting['Extra_volume']} рублей
+📝 Сумма вашего счета: $priceextra рублей
+📥 Запрашиваемый дополнительный объем: $text гигабайт
 
-✅ جهت پرداخت و اضافه شدن حجم، روی دکمه زیر کلیک کنید.";
+✅ Для оплаты и добавления объема нажмите кнопку ниже.";
     sendmessage($from_id, $textextra, $keyboardsetting, 'HTML');
     step('home', $from_id);
 } elseif (preg_match('/confirmaextra_(\w+)/', $datain, $dataget)) {
@@ -1003,11 +1003,11 @@ if (preg_match('/subscriptionurl_(\w+)/', $datain, $dataget)) {
     sendmessage($from_id, $textbotlang['users']['Extra_volume']['extraadded'], $keyboardextrafnished, 'HTML');
     $volumes = $volume / $setting['Extra_volume'];
     $volume = number_format($volume);
-    $text_report = "⭕️ یک کاربر حجم اضافه خریده است
-    اطلاعات کاربر : 
-🪪 آیدی عددی : $from_id
-🛍 حجم خریداری شده  : $volumes
-💰 مبلغ پرداختی : $volume تومان";
+    $text_report = "⭕️ Пользователь купил дополнительный объем
+    Информация о пользователе : 
+🪪 Числовой ID : $from_id
+🛍 Купленный объем : $volumes
+💰 Сумма оплаты : $volume рублей";
     if (isset($setting['Channel_Report']) &&strlen($setting['Channel_Report']) > 0) {
         sendmessage($setting['Channel_Report'], $text_report, null, 'HTML');
     }
@@ -1028,7 +1028,7 @@ if (preg_match('/subscriptionurl_(\w+)/', $datain, $dataget)) {
     $confirmremove = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => "✅  درخواست حذف سرویس را دارم", 'callback_data' => "confirmremoveservices-$username"],
+                ['text' => "✅ Я хочу удалить услугу", 'callback_data' => "confirmremoveservices-$username"],
             ],
         ]
     ]);
@@ -1088,25 +1088,24 @@ if (preg_match('/subscriptionurl_(\w+)/', $datain, $dataget)) {
     $timeDiff = $DataUserOut['expire'] - time();
     $day = $DataUserOut['expire'] ? floor($timeDiff / 86400) . $textbotlang['users']['stateus']['day'] : $textbotlang['users']['stateus']['Unlimited'];
     #-----------------------------#
-    $textinfoadmin = "سلام ادمین 👋
+    $textinfoadmin = "Привет, админ 👋
             
-📌 یک درخواست حذف سرویس  توسط کاربر برای شما ارسال شده است. لطفا بررسی کرده و در صورت درست بودن و موافقت تایید کنید. 
-⚠️ نکات تایید :
-1 -  مبلغ قابل بازگشت به کاربر توسط شما تعیین خواهد شد.
+📌 Запрос на удаление услуги был отправлен пользователем. Пожалуйста, проверьте и подтвердите, если все в порядке.
+⚠️ Примечания к подтверждению:
+1 - Сумма, подлежащая возврату пользователю, будет определена вами.
             
-            
-📊 اطلاعات سرویس کاربر :
-آیدی عددی کاربر : $from_id
-نام کاربری کاربر : @$username
-نام کاربری کانفیگ : {$nameloc['username']}
-وضعیت سرویس : $status_var
-لوکیشن : {$nameloc['Service_location']}
-کد سرویس:{$nameloc['id_invoice']}
+📊 Информация об услуге пользователя:
+Числовой ID пользователя: $from_id
+Имя пользователя: @$username
+Имя пользователя конфигурации: {$nameloc['username']}
+Статус услуги: $status_var
+Локация: {$nameloc['Service_location']}
+Код услуги: {$nameloc['id_invoice']}
     
-📥 حجم مصرفی : $usedTrafficGb
-♾ حجم سرویس : $LastTraffic
-🪫 حجم باقی مانده : $RemainingVolume
-📅 فعال تا تاریخ : $expirationDate ($day)";
+📥 Использованный объем: $usedTrafficGb
+♾ Объем услуги: $LastTraffic
+🪫 Оставшийся объем: $RemainingVolume
+📅 Активен до: $expirationDate ($day)";
     $confirmremoveadmin = json_encode([
         'inline_keyboard' => [
             [
@@ -1185,11 +1184,11 @@ if ($user['step'] == "createusertest" || preg_match('/locationtests_(.*)/', $dat
         $dataoutput['msg'] = json_encode($dataoutput['msg']);
         sendmessage($from_id, $textbotlang['users']['usertest']['errorcreat'], $keyboard, 'html');
         $texterros = "
-⭕️ یک کاربر قصد دریافت اکانت تست داشت که ساخت کانفیگ با خطا مواجه شده و به کاربر کانفیگ داده نشد
-✍️ دلیل خطا : 
-{$dataoutput['msg']}
-آیدی کابر : $from_id
-نام کاربری کاربر : @$username";
+    ⭕️ Пользователь пытался получить тестовый аккаунт, но создание конфигурации завершилось ошибкой, и аккаунт не был предоставлен.
+    ✍️ Причина ошибки: 
+    {$dataoutput['msg']}
+    ID пользователя: $from_id
+    Имя пользователя: @$username";
         foreach ($admin_ids as $admin) {
             sendmessage($admin, $texterros, null, 'html');
         }
@@ -1235,19 +1234,19 @@ if ($user['step'] == "createusertest" || preg_match('/locationtests_(.*)/', $dat
             ]
         ]
     ]);
-    $textcreatuser = "✅ سرویس با موفقیت ایجاد شد
+    $textcreatuser = "✅ Услуга успешно создана
     
-👤 نام کاربری سرویس : <code>$username_ac</code>
-🌿 نام سرویس: تست
-‏🇺🇳 لوکیشن: {$marzban_list_get['name_panel']}
-⏳ مدت زمان: {$setting['time_usertest']}  ساعت
-🗜 حجم سرویس:  {$setting['val_usertest']} مگابایت
+👤 Имя пользователя услуги: <code>$username_ac</code>
+🌿 Название услуги: тест
+‏🇺🇳 Локация: {$marzban_list_get['name_panel']}
+⏳ Срок действия: {$setting['time_usertest']} часов
+🗜 Объем услуги: {$setting['val_usertest']} мегабайт
     
-لینک اتصال:
+Ссылка для подключения:
 <code>$output_config_link</code>
 <code>$text_config</code>
     
-📚 راهنمای اتصال به سرویس را از طریق کلیک کردن دکمه زیر مطالعه بفرمایید";
+📚 Инструкцию по подключению к услуге можно найти, нажав на кнопку ниже";
     if ($marzban_list_get['sublink'] == "onsublink") {
         $urlimage = "$from_id$randomString.png";
         $writer = new PngWriter();
@@ -1288,13 +1287,13 @@ if ($user['step'] == "createusertest" || preg_match('/locationtests_(.*)/', $dat
             ],
         ]
     ]);
-    $text_report = " ⚜️ اکانت تست داده شد
+    $text_report = " ⚜️ Тестовый аккаунт предоставлен
             
-⚙️ یک کاربر اکانت  با نام کانفیگ <code>$username_ac</code>  اکانت تست دریافت کرد
+⚙️ Пользователь получил тестовый аккаунт с конфигурацией <code>$username_ac</code>
             
-اطلاعات کاربر 👇👇
-⚜️ نام کاربری کاربر: @{$user['username']}
-آیدی عددی کاربر : <code>$from_id</code>";
+Информация о пользователе 👇👇
+⚜️ Имя пользователя: @{$user['username']}
+Числовой ID пользователя: <code>$from_id</code>";
     if (isset($setting['Channel_Report']) &&strlen($setting['Channel_Report']) > 0) {
         sendmessage($setting['Channel_Report'], $text_report, $usertestReport, 'HTML');
     }
@@ -1337,21 +1336,21 @@ if ($text == $datatextbot['text_support'] || $text == "/support") {
     foreach ($admin_ids as $id_admin) {
         if ($text) {
             $textsendadmin = "
-📥 یک پیام از کاربر دریافت شد برای پاسخ روی دکمه زیر کلیک کنید  و پیام خود را ارسال کنید.
+    📥 Получено сообщение от пользователя. Чтобы ответить, нажмите кнопку ниже и отправьте свое сообщение.
         
-آیدی عددی : $from_id
-نام کاربری کاربر : @$username
-📝 متن پیام : $text
+    Числовой ID: $from_id
+    Имя пользователя: @$username
+    📝 Текст сообщения: $text
             ";
             sendmessage($id_admin, $textsendadmin, $Response, 'HTML');
         }
         if ($photo) {
             $textsendadmin = "
-📥 یک پیام از کاربر دریافت شد برای پاسخ روی دکمه زیر کلیک کنید  و پیام خود را ارسال کنید.
+    📥 Получено сообщение от пользователя. Чтобы ответить, нажмите кнопку ниже и отправьте свое сообщение.
         
-آیدی عددی : $from_id
-نام کاربری کاربر : @$username
-📝 متن پیام : $caption";
+    Числовой ID: $from_id
+    Имя пользователя: @$username
+    📝 Текст сообщения: $caption";
             telegram('sendphoto', [
                 'chat_id' => $id_admin,
                 'photo' => $photoid,
@@ -1374,13 +1373,13 @@ if ($text == $datatextbot['text_account']) {
     $Balanceuser = number_format($user['Balance'], 0);
     $countorder = select("invoice", "id_user", 'id_user', $from_id, "count");
     $text_account = "
-👨🏻‍💻 وضعیت حساب کاربری شما:
+👨🏻‍💻 Статус вашего аккаунта:
             
-👤 نام: $first_name
-🕴🏻 شناسه کاربری: <code>$from_id</code>
-💰 موجودی: $Balanceuser تومان
-🛍 تعداد سرویس های خریداری شده : $countorder
-🤝 تعداد زیر مجموعه های شما : {$user['affiliatescount']} نفر
+👤 Имя: $first_name
+🕴🏻 Идентификатор пользователя: <code>$from_id</code>
+💰 Баланс: $Balanceuser рублей
+🛍 Количество приобретенных услуг: $countorder
+🤝 Количество ваших рефералов: {$user['affiliatescount']} человек
     
 📆 $dateacc → ⏰ $timeacc
                 ";
@@ -1427,8 +1426,8 @@ if ($text == $datatextbot['text_sell'] || $datain == "buy" || $text == "/buy") {
         ];
 
         $json_list_product_list = json_encode($product);
-        $textproduct = "🛍 برای خرید اشتراک سرویس مدنظر خود را انتخاب کنید
-لوکیشن سرویس  :{$location['name_panel']} ";
+        $textproduct = "🛍 Выберите услугу для покупки подписки
+    Локация услуги: {$location['name_panel']} ";
         sendmessage($from_id, $textproduct, $json_list_product_list, 'HTML');
         update("user", "Processing_value", $location['name_panel'], "id", $from_id);
     } else {
@@ -1475,7 +1474,7 @@ if ($text == $datatextbot['text_sell'] || $datain == "buy" || $text == "/buy") {
         $prodcut = $dataget[1];
     }
     $panellist = select("marzban_panel", "*", "name_panel", $user['Processing_value'], "select");
-    if ($panellist['MethodUsername'] == "نام کاربری دلخواه") {
+    if ($panellist['MethodUsername'] == "Custom Username") {
         if (!preg_match('~(?!_)^[a-z][a-z\d_]{2,32}(?<!_)$~i', $text)) {
             sendmessage($from_id, $textbotlang['users']['invalidusername'], $backuser, 'HTML');
             return;
@@ -1505,15 +1504,15 @@ if ($text == $datatextbot['text_sell'] || $datain == "buy" || $text == "/buy") {
     $info_product['price_product'] = number_format($info_product['price_product'], 0);
     $user['Balance'] = number_format($user['Balance']);
     $textin = "
-             📇 پیش فاکتور شما:
-👤 نام کاربری: <code>$username_ac</code>
-🔐 نام سرویس: {$info_product['name_product']}
-📆 مدت اعتبار: {$info_product['Service_time']} روز
-💶 قیمت: {$info_product['price_product']}  تومان
-👥 حجم اکانت: {$info_product['Volume_constraint']} گیگ
-💵 موجودی کیف پول شما : {$user['Balance']}
+             📇 Ваш счет:
+👤 Имя пользователя: <code>$username_ac</code>
+🔐 Название услуги: {$info_product['name_product']}
+📆 Срок действия: {$info_product['Service_time']} дней
+💶 Цена: {$info_product['price_product']} рублей
+👥 Объем аккаунта: {$info_product['Volume_constraint']} ГБ
+💵 Баланс вашего кошелька: {$user['Balance']} рублей
     
-💰 سفارش شما آماده پرداخت است.  ";
+💰 Ваш заказ готов к оплате.  ";
     sendmessage($from_id, $textin, $payment, 'HTML');
     step('payment', $from_id);
 } elseif ($user['step'] == "payment" && $datain == "confirmandgetservice" || $datain == "confirmandgetserviceDiscount") {
@@ -1581,11 +1580,11 @@ if ($text == $datatextbot['text_sell'] || $datain == "buy" || $text == "/buy") {
         $dataoutput['msg'] = json_encode($dataoutput['msg']);
         sendmessage($from_id, $textbotlang['users']['sell']['ErrorConfig'], $keyboard, 'HTML');
         $texterros = "
-⭕️ یک کاربر قصد دریافت اکانت داشت که ساخت کانفیگ با خطا مواجه شده و به کاربر کانفیگ داده نشد
-✍️ دلیل خطا : 
-{$dataoutput['msg']}
-آیدی کابر : $from_id
-نام کاربری کاربر : @$username";
+    ⭕️ Пользователь пытался получить аккаунт, но создание конфигурации завершилось ошибкой, и аккаунт не был предоставлен.
+    ✍️ Причина ошибки: 
+    {$dataoutput['msg']}
+    ID пользователя: $from_id
+    Имя пользователя: @$username";
         foreach ($admin_ids as $admin) {
             sendmessage($admin, $texterros, null, 'HTML');
         }
@@ -1596,7 +1595,7 @@ if ($text == $datatextbot['text_sell'] || $datain == "buy" || $text == "/buy") {
         $SellDiscountlimit = select("DiscountSell", "*", "codeDiscount", $partsdic[0], "select");
         $value = intval($SellDiscountlimit['usedDiscount']) + 1;
         update("DiscountSell", "usedDiscount", $value, "codeDiscount", $partsdic[0]);
-        $text_report = "⭕️ یک کاربر با نام کاربری @$username  و آیدی عددی $from_id از کد تخفیف {$partsdic[0]} استفاده کرد.";
+        $text_report = "⭕️ Пользователь с именем пользователя @$username и числовым ID $from_id использовал код скидки {$partsdic[0]}.";
         if (isset($setting['Channel_Report']) &&strlen($setting['Channel_Report']) > 0) {
             sendmessage($setting['Channel_Report'], $text_report, null, 'HTML');
         }
@@ -1610,9 +1609,9 @@ if ($text == $datatextbot['text_sell'] || $datain == "buy" || $text == "/buy") {
             $Balance_prim = $user_Balance['Balance'] + $result;
             update("user", "Balance", $Balance_prim, "id", $user['affiliates']);
             $result = number_format($result);
-            $textadd = "🎁  پرداخت پورسانت 
+            $textadd = "🎁 Выплата комиссии
     
-مبلغ $result تومان به حساب شما از طرف  زیر مجموعه تان به کیف پول شما واریز گردید";
+Сумма $result рублей была зачислена на ваш счет от вашего реферала";
             sendmessage($user['affiliates'], $textadd, null, 'HTML');
         }
     }
@@ -1643,19 +1642,19 @@ if ($text == $datatextbot['text_sell'] || $datain == "buy" || $text == "/buy") {
             ]
         ]
     ]);
-    $textcreatuser = "✅ سرویس با موفقیت ایجاد شد
+    $textcreatuser = "✅ Услуга успешно создана
     
-👤 نام کاربری سرویس : <code>$username_ac</code>
-🌿 نام سرویس: {$info_product['name_product']}
-‏🇺🇳 لوکیشن: {$marzban_list_get['name_panel']}
-⏳ مدت زمان: {$info_product['Service_time']}  روز
-🗜 حجم سرویس:  {$info_product['Volume_constraint']} گیگ
+👤 Имя пользователя услуги: <code>$username_ac</code>
+🌿 Название услуги: {$info_product['name_product']}
+‏🇺🇳 Локация: {$marzban_list_get['name_panel']}
+⏳ Срок действия: {$info_product['Service_time']} дней
+🗜 Объем услуги: {$info_product['Volume_constraint']} ГБ
     
-لینک اتصال:
+Ссылка для подключения:
 $text_config
 $link_config
     
-📚 راهنمای اتصال به سرویس را از طریق کلیک کردن دکمه زیر مطالعه بفرمایید";
+📚 Инструкцию по подключению к услуге можно найти, нажав на кнопку ниже";
     if ($marzban_list_get['sublink'] == "onsublink") {
         $urlimage = "$from_id$randomString.png";
         $writer = new PngWriter();
@@ -1706,19 +1705,19 @@ $link_config
     $Balance_prim = $user['Balance'] - $priceproduct;
     update("user", "Balance", $Balance_prim, "id", $from_id);
     $user['Balance'] = number_format($user['Balance'], 0);
-    $text_report = " 🛍 خرید جدید
+    $text_report = " 🛍 Новая покупка
             
-    ⚙️ یک کاربر اکانت  با نام کانفیگ <code>$username_ac</code> خریداری کرد
+    ⚙️ Пользователь приобрел аккаунт с конфигурацией <code>$username_ac</code>
     
-    قیمت محصول : {$info_product['price_product']} تومان
-    حجم محصول : {$info_product['Volume_constraint']} 
-    آیدی عددی کاربر : <code>$from_id</code>
-    شماره تلفن کاربر : {$user['number']}
-    موقعیت سرویس کاربر :{$user['Processing_value']}
-    موجودی کاربر : {$user['Balance']} تومان
+    Цена продукта: {$info_product['price_product']} рублей
+    Объем продукта: {$info_product['Volume_constraint']} 
+    Числовой ID пользователя: <code>$from_id</code>
+    Номер телефона пользователя: {$user['number']}
+    Локация сервиса пользователя: {$user['Processing_value']}
+    Баланс пользователя: {$user['Balance']} рублей
     
-        اطلاعات کاربر 👇👇
-        ⚜️ نام کاربری کاربر: @$username";
+        Информация о пользователе 👇👇
+        ⚜️ Имя пользователя: @$username";
     if (isset($setting['Channel_Report']) &&strlen($setting['Channel_Report']) > 0) {
         sendmessage($setting['Channel_Report'], $text_report, null, 'HTML');
     }
@@ -1767,18 +1766,18 @@ $link_config
     if ($info_product['price_product'] < 0)
         $info_product['price_product'] = 0;
     $textin = "
-             📇 پیش فاکتور شما:
-👤 نام کاربری: <code>{$user['Processing_value_tow']}</code>
-🔐 نام سرویس: {$info_product['name_product']}
-📆 مدت اعتبار: {$info_product['Service_time']} روز
-💶 قیمت: {$info_product['price_product']}  تومان
-👥 حجم اکانت: {$info_product['Volume_constraint']} گیگ
-💵 موجودی کیف پول شما : {$user['Balance']}
-              
-💰 سفارش شما آماده پرداخت است.  ";
+                 📇 Ваш счет:
+    👤 Имя пользователя: <code>{$user['Processing_value_tow']}</code>
+    🔐 Название услуги: {$info_product['name_product']}
+    📆 Срок действия: {$info_product['Service_time']} дней
+    💶 Цена: {$info_product['price_product']} рублей
+    👥 Объем аккаунта: {$info_product['Volume_constraint']} ГБ
+    💵 Баланс вашего кошелька: {$user['Balance']} рублей
+        
+    💰 Ваш заказ готов к оплате.  ";
     $paymentDiscount = json_encode([
         'inline_keyboard' => [
-            [['text' => "💰 پرداخت و دریافت سرویس", 'callback_data' => "confirmandgetserviceDiscount"]],
+            [['text' => "💰 Оплатить и получить услугу", 'callback_data' => "confirmandgetserviceDiscount"]],
             [['text' => $textbotlang['users']['backhome'], 'callback_data' => "backuser"]]
         ]
     ]);
@@ -1811,20 +1810,20 @@ if ($text == $datatextbot['text_Add_Balance'] || $text == "/wallet") {
     if ($datain == "cart_to_offline") {
         $PaySetting = select("PaySetting", "ValuePay", "NamePay", "CartDescription", "select")['ValuePay'];
         $Processing_value = number_format($user['Processing_value']);
-        $textcart = "برای افزایش موجودی به صورت دستی، مبلغ $Processing_value  تومان  را به شماره‌ی حساب زیر واریز کنید 👇🏻
-    
-    ==================== 
-    $PaySetting
-    ====================
-    
-🌅 عکس رسید خود را در این مرحله ارسال نمایید. 
-    
-⚠️ حداکثر واریز مبلغ 10 میلیون تومان می باشد.
-⚠️ امکان برداشت وجه از کیف پول  نیست.
-⚠️ مسئولیت واریز اشتباهی با شماست.";
+        $textcart = "Для пополнения баланса вручную переведите сумму $Processing_value рублей на следующий счет 👇🏻
+        
+        ==================== 
+        $PaySetting
+        ====================
+        
+    🌅 Отправьте фото квитанции на этом этапе. 
+        
+    ⚠️ Максимальная сумма пополнения 10 миллионов рублей.
+    ⚠️ Вывод средств с кошелька невозможен.
+    ⚠️ Ответственность за ошибочный перевод лежит на вас.";
         sendmessage($from_id, $textcart, $backuser, 'HTML');
         step('cart_to_cart_user', $from_id);
-    }
+        }
     if ($datain == "aqayepardakht") {
         if ($user['Processing_value'] < 5000) {
             sendmessage($from_id, $textbotlang['users']['Balance']['zarinpal'], null, 'HTML');
@@ -1858,12 +1857,12 @@ if ($text == $datatextbot['text_Add_Balance'] || $text == "/wallet") {
         ]);
         $user['Processing_value'] = number_format($user['Processing_value'], 0);
         $textnowpayments = "
-✅ فاکتور پرداخت ایجاد شد.
+    ✅ Счет на оплату создан.
         
-🔢 شماره فاکتور : $randomString
-💰 مبلغ فاکتور : {$user['Processing_value']} تومان
-    
-    جهت پرداخت از دکمه زیر استفاده کنید👇🏻";
+    🔢 Номер счета: $randomString
+    💰 Сумма счета: {$user['Processing_value']} рублей
+        
+        Для оплаты используйте кнопку ниже👇🏻";
         sendmessage($from_id, $textnowpayments, $paymentkeyboard, 'HTML');
     }
 
@@ -1904,18 +1903,18 @@ if ($text == $datatextbot['text_Add_Balance'] || $text == "/wallet") {
         $Processing_value = number_format($user['Processing_value'], 0);
         $USD = number_format($USD, 0);
         $textnowpayments = "
-            ✅ فاکتور پرداخت ارزی NOWPayments ایجاد شد.
+            ✅ Счет на оплату NOWPayments создан.
         
-🔢 شماره فاکتور : $randomString
-💰 مبلغ فاکتور : $Processing_value تومان
+    🔢 Номер счета: $randomString
+    💰 Сумма счета: $Processing_value рублей
         
-📊 قیمت دلار روز : $USD تومان
-💵 نهایی:$usdprice دلار 
+    📊 Курс доллара: $USD рублей
+    💵 Итого: $usdprice долларов 
         
         
-🌟 امکان پرداخت با ارز های مختلف وجود دارد
+    🌟 Возможна оплата различными криптовалютами
         
-جهت پرداخت از دکمه زیر استفاده کنید👇🏻";
+    Для оплаты используйте кнопку ниже👇🏻";
         sendmessage($from_id, $textnowpayments, $paymentkeyboard, 'HTML');
     }
     if ($datain == "iranpay") {
@@ -1955,11 +1954,11 @@ if ($text == $datatextbot['text_Add_Balance'] || $text == "/wallet") {
             step('home', $from_id);
             foreach ($admin_ids as $admin) {
                 $ErrorsLinkPayment = "
-⭕️ یک کاربر قصد پرداخت داشت که ساخت لینک پرداخت  با خطا مواجه شده و به کاربر لینک داده نشد
-✍️ دلیل خطا : $text_error
+⭕️ Пользователь пытался произвести оплату, но создание ссылки на оплату завершилось ошибкой, и ссылка не была предоставлена.
+✍️ Причина ошибки: $text_error
         
-آیدی کابر : $from_id
-نام کاربری کاربر : @$username";
+ID пользователя: $from_id
+Имя пользователя: @$username";
                 sendmessage($admin, $ErrorsLinkPayment, $keyboard, 'HTML');
             }
             return;
@@ -1978,29 +1977,27 @@ if ($text == $datatextbot['text_Add_Balance'] || $text == "/wallet") {
             ]
         ]);
         $pricetoman = number_format($user['Processing_value'], 0);
-        $textnowpayments = "✅ تراکنش شما ایجاد شد
-    
-🛒 کد پیگیری:  <code>$randomString</code> 
-🌐 شبکه: TRX
-💳 آدرس ولت: <code>$pay_address</code>
-💲 مبلغ تراکنش به ترون : <code>$trxprice</code>
-💲 مبلغ تراکنش به تومان  : <code>$pricetoman</code>
-💲 نرخ ترون   : <code>$trx</code>
-    
-    
-    
-📌 مبلغ $pricetoman  تومان بعد از تایید پرداخت توسط شبکه بلاکچین به کیف پول شما اضافه میشود
-    
-💢 لطفا به این نکات قبل از پرداخت توجه کنید 👇
-    
-🔸 در صورت اشتباه وارد کردن آدرس کیف پول، تراکنش تایید نمیشود و بازگشت وجه امکان پذیر نیست
-🔹 مبلغ ارسالی نباید کمتر و یا بیشتر از مبلغ اعلام شده باشد.
-🔸 کارمزد تراکنش باید از سمت کاربر پرداخت شود و باید دقیقا مبلغی که اعلام شده ارسال شود.
-🔹 در صورت واریز بیش از مقدار گفته شده، امکان اضافه کردن تفاوت وجه وجود ندارد.
-🔸 هر کیف پول فقط برای یک تراکنش قابل استفاده است و درصورت ارسال مجدد ارز امکان برگشت وجه نیست.
-🔹 هر تراکنش بین 10 دقیقه الی  15 دقیقه  معتبر است .
-    
-✅ در صورت مشکل میتوانید با پشتیبانی در ارتباط باشید";
+        $textnowpayments = "✅ Ваша транзакция создана
+
+        🛒 Код отслеживания:  <code>$randomString</code> 
+        🌐 Сеть: TRX
+        💳 Адрес кошелька: <code>$pay_address</code>
+        💲 Сумма транзакции в TRX: <code>$trxprice</code>
+        💲 Сумма транзакции в рублях: <code>$pricetoman</code>
+        💲 Курс TRX: <code>$trx</code>
+
+        📌 Сумма $pricetoman рублей будет добавлена на ваш кошелек после подтверждения транзакции в блокчейне
+
+        💢 Пожалуйста, обратите внимание на следующие моменты перед оплатой 👇
+
+        🔸 В случае неправильного ввода адреса кошелька, транзакция не будет подтверждена и возврат средств невозможен.
+        🔹 Отправляемая сумма не должна быть меньше или больше указанной суммы.
+        🔸 Комиссия за транзакцию должна быть оплачена пользователем, и должна быть отправлена точная указанная сумма.
+        🔹 В случае отправки суммы, превышающей указанную, разница не будет добавлена.
+        🔸 Каждый кошелек можно использовать только для одной транзакции, повторная отправка средств невозможна.
+        🔹 Каждая транзакция действительна в течение 10-15 минут.
+
+        ✅ В случае проблем вы можете связаться с поддержкой";
         sendmessage($from_id, $textnowpayments, $paymentkeyboard, 'HTML');
     }
     if ($datain == "perfectmoney") {
@@ -2040,9 +2037,9 @@ if ($user['step'] == "getvcodeuser") {
         sendmessage($from_id, $textbotlang['users']['perfectmoney']['errors'], null, 'HTML');
         foreach ($admin_ids as $id_admin) {
             $texterrors = "";
-            sendmessage($id_admin, "❌ یک کاربر قصد افزایش موجودی با ووچر را داشته اما با خطا مواجه شده است 
+            sendmessage($id_admin, "❌ Пользователь пытался пополнить баланс с помощью ваучера, но произошла ошибка
     
-دلیل خطا : $errorMessage", null, 'HTML');
+Причина ошибки: $errorMessage", null, 'HTML');
         }
         return;
     }
@@ -2107,11 +2104,11 @@ if (preg_match('/Confirmpay_user_(\w+)_(\w+)/', $datain, $dataget)) {
         update("Payment_report", "payment_Status", "paid", "id_order", $Payment_report['id_order']);
         sendmessage($from_id, $textbotlang['users']['Balance']['Confirmpay'], null, 'HTML');
         $Payment_report['price'] = number_format($Payment_report['price']);
-        $text_report = "💵 پرداخت جدید
+        $text_report = "💵 Новый платеж
             
-آیدی عددی کاربر : $from_id
-مبلغ تراکنش : {$Payment_report['price']} 
-روش پرداخت :  درگاه ارزی ریالی";
+    Числовой ID пользователя: $from_id
+    Сумма транзакции: {$Payment_report['price']} 
+    Метод оплаты: Валютный платежный шлюз";
         if (isset($setting['Channel_Report']) &&strlen($setting['Channel_Report']) > 0) {
             sendmessage($setting['Channel_Report'], $text_report, null, 'HTML');
         }
@@ -2180,7 +2177,7 @@ if (preg_match('/Confirmpay_user_(\w+)_(\w+)/', $datain, $dataget)) {
     $stmt->bindParam(7, $invoice);
     $stmt->execute();
     if ($user['Processing_value_tow'] == "getconfigafterpay"){
-        sendmessage($from_id, "🚀 رسید پرداخت شما ارسال شد پس از تایید توسط مدیریت سفارش شما ارسال خواهد شد", $keyboard, 'HTML');
+        sendmessage($from_id, "🚀 Ваш платеж отправлен. После подтверждения администрацией ваш заказ будет выполнен.", $keyboard, 'HTML');
     }else{
         sendmessage($from_id, $textbotlang['users']['Balance']['Send-receipt'], $keyboard, 'HTML');
     }
@@ -2194,15 +2191,15 @@ if (preg_match('/Confirmpay_user_(\w+)_(\w+)/', $datain, $dataget)) {
     ]);
     $Processing_value = number_format($user['Processing_value']);
     $textsendrasid = "
-                ⭕️ یک پرداخت جدید انجام شده است .
+                ⭕️ Новый платеж.
             
-👤 شناسه کاربر: $from_id
-🛒 کد پیگیری پرداخت: $randomString
-⚜️ نام کاربری: @$username
-💸 مبلغ پرداختی: $Processing_value تومان
+👤 Идентификатор пользователя: $from_id
+🛒 Код отслеживания платежа: $randomString
+⚜️ Имя пользователя: @$username
+💸 Сумма платежа: $Processing_value рублей
             
-توضیحات: $caption
-✍️ در صورت درست بودن رسید پرداخت را تایید نمایید.";
+Описание: $caption
+✍️ Если квитанция верна, подтвердите платеж.";
     foreach ($admin_ids as $id_admin) {
         telegram('sendphoto', [
             'chat_id' => $id_admin,
@@ -2249,7 +2246,7 @@ if ($datain == "Discount") {
     $get_codesql = $stmt->fetch(PDO::FETCH_ASSOC);
     step('home', $from_id);
     number_format($get_codesql['price']);
-    $text_balance_code = "کد هدیه با موفقیت ثبت شد و به موجودی شما مبلغ {$get_codesql['price']} تومان اضافه گردید. 🥳";
+    $text_balance_code = "Подарочный код успешно активирован, и на ваш баланс добавлено {$get_codesql['price']} рублей. 🥳";
     sendmessage($from_id, $text_balance_code, $keyboard, 'HTML');
     $stmt = $pdo->prepare("INSERT INTO Giftcodeconsumed (id_user, code) VALUES (?, ?)");
     $stmt->bindParam(1, $from_id);
@@ -2290,30 +2287,30 @@ if ($text == "👥 زیر مجموعه گیری") {
     } else {
         $price_Discount = "غیرفعال";
     }
-    $textaffiliates = "🤔 زیرمجموعه گیری به چه صورت است ؟
+    $textaffiliates = "🤔 Как работает реферальная программа?
     
-👨🏻‍💻 ما برای شما محیطی فراهم کرده ایم  تا بتوانید بدون پرداخت حتی 1 ریال به ما، بتوانید موجودی کیف پول خودتان را در ربات افزایش دهید و از خدمات ربات استفاده نمایید.
+👨🏻‍💻 Мы создали для вас среду, в которой вы можете увеличить баланс своего кошелька в боте, не заплатив ни копейки, и использовать услуги бота.
     
-👥 شما میتوانید با دعوت دوستان و آشنایان خود به ربات ما از طریق لینک اختصاصی شما! کسب درآمد کنید و حتی با هر خرید زیرمجموعه ها به شما پورسانت داده خواهد شد.
+👥 Вы можете зарабатывать, приглашая своих друзей и знакомых в наш бот через вашу уникальную ссылку! За каждую покупку рефералов вы также будете получать комиссию.
 
-👤 شما می توانید با استفاده از بنر بالا برای خود زیرمجموعه جمع کنید
+👤 Вы можете использовать баннер выше, чтобы собрать рефералов
     
-💵 مبلغ هدیه به ازای هر عضویت :  $price_Discount
-💴 میزان پورسانت از خرید زیرمجموعه :  $affiliatespercentage";
+💵 Сумма бонуса за каждую регистрацию:  $price_Discount
+💴 Процент комиссии с покупок рефералов:  $affiliatespercentage";
     sendmessage($from_id, $textaffiliates, $keyboard, 'HTML');
 }
 
 #----------------[  admin section  ]------------------#
-$textadmin = ["panel", "/panel", "پنل مدیریت", "ادمین"];
+$textadmin = ["panel", "/panel", "панель управления", "админ"];
 if (!in_array($from_id, $admin_ids)) {
     if (in_array($text, $textadmin)) {
         sendmessage($from_id, $textbotlang['users']['Invalid-comment'], null, 'HTML');
         foreach ($admin_ids as $admin) {
             $textadmin = "
-                مدیر عزیز یک کاربر قصد ورود به پنل ادمین را داشت 
-        نام کاربری : @$username
-        آیدی عددی : $from_id
-        نام کاربر  :$first_name
+                Уважаемый администратор, пользователь пытался войти в панель администратора 
+        Имя пользователя: @$username
+        Числовой ID: $from_id
+        Имя пользователя: $first_name
                 ";
             sendmessage($admin, $textadmin, null, 'HTML');
         }
@@ -2322,20 +2319,20 @@ if (!in_array($from_id, $admin_ids)) {
 }
 if (in_array($text, $textadmin)) {
     $text_admin = "
-        سلام مدیر عزیز به پنل ادمین خوش امدی گلم😍
-    ⭕️ نسخه فعلی ربات شما : $version
-    ❓راهنمایی : 
-    1 - برای اضافه کردن پنل دکمه پنل   را زده و دکمه اضافه کردن پنل را بزنید.
-    2- از دکمه مالی میتوانید وضعیت درگاه و مرچنت ها را تنظیم کنید
-    3-  درگاه ارزی ریالی باید فقط api nowpayments را تنظیم کنید و تمام تنظیمات کیف پول و... داخل سایت nowpayments است";
+        Привет, админ! Добро пожаловать в панель администратора 😍
+    ⭕️ Текущая версия вашего бота: $version
+    ❓Руководство:
+    1 - Чтобы добавить панель, нажмите кнопку 'Панель' и выберите 'Добавить панель'.
+    2 - В разделе 'Финансы' вы можете настроить статус шлюзов и мерчантов.
+    3 - Для валютного платежного шлюза необходимо настроить только API NowPayments, все остальные настройки кошелька и т.д. находятся на сайте NowPayments.";
     sendmessage($from_id, $text_admin, $keyboardadmin, 'HTML');
 }
-if ($text == "🏠 بازگشت به منوی مدیریت") {
+if ($text == "🏠 Вернуться в меню управления") {
     sendmessage($from_id, $textbotlang['Admin']['Back-Admin'], $keyboardadmin, 'HTML');
     step('home', $from_id);
     return;
 }
-if ($text == "🔑 روشن / خاموش کردن قفل کانال") {
+if ($text == "🔑 Включить / Выключить блокировку канала") {
     if ($channels['Channel_lock'] == "off") {
         sendmessage($from_id, $textbotlang['Admin']['channel']['join-channel-on'], $channelkeyboard, 'HTML');
         update("channels", "Channel_lock", "on");
@@ -2343,7 +2340,7 @@ if ($text == "🔑 روشن / خاموش کردن قفل کانال") {
         sendmessage($from_id, $textbotlang['Admin']['channel']['join-channel-off'], $channelkeyboard, 'HTML');
         update("channels", "Channel_lock", "off");
     }
-} elseif ($text == "📣 تنظیم کانال جوین اجباری") {
+} elseif ($text == "📣 Настроить обязательное присоединение к каналу") {
     sendmessage($from_id, $textbotlang['Admin']['channel']['changechannel'] . $channels['link'], $backadmin, 'HTML');
     step('addchannel', $from_id);
 } elseif ($user['step'] == "addchannel") {
@@ -2361,7 +2358,7 @@ if ($text == "🔑 روشن / خاموش کردن قفل کانال") {
         update("channels", "link", $text);
     }
 }
-if ($text == "👨‍💻 اضافه کردن ادمین") {
+if ($text == "👨‍💻 Добавить администратора") {
     sendmessage($from_id, $textbotlang['Admin']['manageadmin']['getid'], $backadmin, 'HTML');
     step('addadmin', $from_id);
 }
@@ -2372,12 +2369,12 @@ if ($user['step'] == "addadmin") {
     $stmt->bindParam(1, $text);
     $stmt->execute();
 }
-if ($text == "❌ حذف ادمین") {
+if ($text == "❌ Удалить администратора") {
     sendmessage($from_id, $textbotlang['Admin']['manageadmin']['getid'], $backadmin, 'HTML');
     step('deleteadmin', $from_id);
 } elseif ($user['step'] == "deleteadmin") {
     if(intval($text) == $adminnumber){
-        sendmessage($from_id,"❌امکان حذف ادمین اصلی وجود ندارد برای تغییر ادمین اصلی باید از فایل config.php  ابتدا ایدی عددی ادمین اصلی  را تغییر سپس از این بخش حذف نمایید", null, 'HTML');
+        sendmessage($from_id,"❌ Невозможно удалить главного администратора. Чтобы изменить главного администратора, сначала измените числовой идентификатор администратора в файле config.php, а затем удалите его из этого раздела.", null, 'HTML');
         return;
     }
     if (!is_numeric($text) || !in_array($text, $admin_ids))
@@ -2399,7 +2396,7 @@ elseif (preg_match('/limitusertest_(.*)/', $datain, $dataget)) {
     step('home', $from_id);
     update("user", "limit_usertest", $text, "id", $user['Processing_value']);
 }
-if ($text == "➕ محدودیت ساخت اکانت تست برای همه") {
+if ($text == "➕ Ограничение на создание тестового аккаунта для всех") {
     sendmessage($from_id, $textbotlang['Admin']['getlimitusertest']['limitall'], $backadmin, 'HTML');
     step('limit_usertest_allusers', $from_id);
 } elseif ($user['step'] == "limit_usertest_allusers") {
@@ -2408,11 +2405,11 @@ if ($text == "➕ محدودیت ساخت اکانت تست برای همه") {
     update("setting", "limit_usertest_all", $text);
     update("user", "limit_usertest", $text);
 }
-if ($text == "📯 تنظیمات کانال") {
+if ($text == "📯 Настройки канала") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $channelkeyboard, 'HTML');
 }
 #-------------------------#
-if ($text == "📊 آمار ربات") {
+if ($text == "📊 Статистика бота") {
     $current_date_time = time();
     $datefirst = $current_date_time - 86400;
     $desired_date_time_start = $current_date_time - 3600;
@@ -2444,20 +2441,20 @@ if ($text == "📊 آمار ربات") {
     $ping = number_format(floatval($ping[0]),2);
     $timeacc = jdate('H:i:s', time());
     $statisticsall = "
-📊 آمار کلی ربات  
+📊 Общая статистика бота  
 
-📌 تعداد کاربران : $statistics نفر
-📌 موجودی کل کاربران : {$Balanceall['SUM(Balance)']}
-📌 پینگ ربات  : $ping
-📌 تعداد اکانت های تست گرفته شده : $count_usertest نفر
-📌 تعداد فروش کل : $invoice عدد
-📌 جمع فروش کل : $invoicesum تومان
-📌 تعداد فروش یک روز گذشته : $dayListSell عدد
-📌 تعداد پنل ها : $sumpanel عدد";
+📌 Количество пользователей: $statistics человек
+📌 Общий баланс пользователей: {$Balanceall['SUM(Balance)']}
+📌 Пинг бота: $ping
+📌 Количество тестовых аккаунтов: $count_usertest человек
+📌 Общее количество продаж: $invoice штук
+📌 Общая сумма продаж: $invoicesum рублей
+📌 Количество продаж за последние сутки: $dayListSell штук
+📌 Количество панелей: $sumpanel штук";
     sendmessage($from_id, $statisticsall, null, 'HTML');
 }
 
-if ($text == "🔌 وضعیت اتصال پنل") {
+if ($text == "🔌 Статус подключения панели") {
     $marzban_list_get = select("marzban_panel", "*", "name_panel", $user['Processing_value'], "select");
     if ($marzban_list_get['type'] == "marzban") {
         $Check_token = token_panel($marzban_list_get['id']);
@@ -2470,18 +2467,18 @@ if ($text == "🔌 وضعیت اتصال پنل") {
             $bandwidth = formatBytes($System_Stats['outgoing_bandwidth'] + $System_Stats['incoming_bandwidth']);
             $Condition_marzban = "";
             $text_marzban = "
-    آمار پنل شما👇:
+    Статистика вашей панели👇:
                                  
-    🖥 وضعیت اتصال پنل مرزبان: ✅ پنل متصل است
-    👥  تعداد کل کاربران: $total_user
-    👤 تعداد کاربران فعال: $active_users
-    📡 نسخه پنل مرزبان :  {$System_Stats['version']}
-    💻 رم  کل سرور  : $mem_total
-    💻 مصرف رم پنل مرزبان  : $mem_used
-    🌐 ترافیک کل مصرف شده  ( آپلود / دانلود) : $bandwidth";
+    🖥 Статус подключения панели Marzban: ✅ Панель подключена
+    👥 Общее количество пользователей: $total_user
+    👤 Количество активных пользователей: $active_users
+    📡 Версия панели Marzban:  {$System_Stats['version']}
+    💻 Общая память сервера: $mem_total
+    💻 Используемая память панели Marzban: $mem_used
+    🌐 Общее потребление трафика (загрузка/выгрузка): $bandwidth";
             sendmessage($from_id, $text_marzban, null, 'HTML');
         } elseif (isset ($Check_token['detail']) && $Check_token['detail'] == "Incorrect username or password") {
-            $text_marzban = "❌ نام کاربری یا رمز عبور پنل اشتباه است";
+            $text_marzban = "❌ Неправильное имя пользователя или пароль панели";
             sendmessage($from_id, $text_marzban, null, 'HTML');
         } else {
             $text_marzban = $textbotlang['Admin']['managepanel']['errorstateuspanel'] . json_encode($Check_token);
@@ -2494,66 +2491,66 @@ if ($text == "🔌 وضعیت اتصال پنل") {
             $active_users = $System_Stats['active'];
             $total_user = $System_Stats['total'];
             $text_marzban = "
-    آمار پنل شما👇:
-🖥 وضعیت اتصال پنل مرزبان: ✅ پنل متصل است
-👥  تعداد کل کاربران: $total_user
-👤 تعداد کاربران فعال: $active_users";
+    Статистика вашей панели👇:
+🖥 Статус подключения панели Marzban: ✅ Панель подключена
+👥 Общее количество пользователей: $total_user
+👤 Количество активных пользователей: $active_users";
             sendmessage($from_id, $text_marzban, null, 'HTML');
         } elseif (isset ($Check_token['detail']) && $Check_token['detail'] == "Incorrect username or password") {
-            $text_marzban = "❌ نام کاربری یا رمز عبور پنل اشتباه است";
+            $text_marzban = "❌ Неправильное имя пользователя или пароль панели";
             sendmessage($from_id, $text_marzban, null, 'HTML');
         } else {
             $text_marzban = $textbotlang['Admin']['managepanel']['errorstateuspanel'] . json_encode($Check_token);
             sendmessage($from_id, $text_marzban, null, 'HTML');
         }
-    } elseif ($marzban_list_get['type'] == "x-ui_single") {
+        } elseif ($marzban_list_get['type'] == "x-ui_single") {
         $x_ui_check_connect = login($marzban_list_get['url_panel'], $marzban_list_get['username_panel'], $marzban_list_get['password_panel']);
         if ($x_ui_check_connect['success']) {
             sendmessage($from_id, $textbotlang['Admin']['managepanel']['connectx-ui'], null, 'HTML');
         } elseif ($x_ui_check_connect['msg'] == "Invalid username or password.") {
-            $text_marzban = "❌ نام کاربری یا رمز عبور پنل اشتباه است";
+            $text_marzban = "❌ Неправильное имя пользователя или пароль панели";
             sendmessage($from_id, $text_marzban, null, 'HTML');
         } else {
             $text_marzban = $textbotlang['Admin']['managepanel']['errorstateuspanel'];
             sendmessage($from_id, $text_marzban, null, 'HTML');
         }
-    }elseif ($marzban_list_get['type'] == "alireza") {
+        }elseif ($marzban_list_get['type'] == "alireza") {
         $x_ui_check_connect = loginalireza($marzban_list_get['url_panel'], $marzban_list_get['username_panel'], $marzban_list_get['password_panel']);
         if ($x_ui_check_connect['success']) {
             sendmessage($from_id, $textbotlang['Admin']['managepanel']['connectx-ui'], null, 'HTML');
         } elseif ($x_ui_check_connect['msg'] == "Invalid username or password.") {
-            $text_marzban = "❌ نام کاربری یا رمز عبور پنل اشتباه است";
+            $text_marzban = "❌ Неправильное имя пользователя или пароль панели";
             sendmessage($from_id, $text_marzban, null, 'HTML');
         } else {
             $text_marzban = $textbotlang['Admin']['managepanel']['errorstateuspanel'];
             sendmessage($from_id, $text_marzban, null, 'HTML');
         }
+        }
+        step('home', $from_id);
     }
-    step('home', $from_id);
-}
-if ($text == "📜 مشاهده لیست ادمین ها") {
-    $List_admin = null;
-    $admin_ids = array_filter($admin_ids);
-    foreach ($admin_ids as $admin) {
+    if ($text == "📜 Просмотр списка администраторов") {
+        $List_admin = null;
+        $admin_ids = array_filter($admin_ids);
+        foreach ($admin_ids as $admin) {
         $List_admin .= "$admin\n";
-    }
-    $list_admin_text = "👨‍🔧 آیدی عددی ادمین ها: 
-                
+        }
+        $list_admin_text = "👨‍🔧 Числовые ID администраторов: 
+            
             $List_admin";
-    sendmessage($from_id, $list_admin_text, $admin_section_panel, 'HTML');
-}
-if ($text == "🖥  اضافه کردن پنل") {
-    sendmessage($from_id, $textbotlang['Admin']['managepanel']['addpanelname'], $backadmin, 'HTML');
-    step('add_name_panel', $from_id);
-} elseif ($user['step'] == "add_name_panel") {
-    if (in_array($text, $marzban_list)) {
+        sendmessage($from_id, $list_admin_text, $admin_section_panel, 'HTML');
+    }
+    if ($text == "🖥 Добавить панель") {
+        sendmessage($from_id, $textbotlang['Admin']['managepanel']['addpanelname'], $backadmin, 'HTML');
+        step('add_name_panel', $from_id);
+    } elseif ($user['step'] == "add_name_panel") {
+        if (in_array($text, $marzban_list)) {
         sendmessage($from_id, $textbotlang['Admin']['managepanel']['Repeatpanel'], $backadmin, 'HTML');
         return;
     }
     $inboundid = "0";
     $sublink = "onsublink";
     $config = "offconfig";
-    $valusername = "آیدی عددی + حروف و عدد رندوم";
+    $valusername = "Числовой ID + случайные буквы и цифры";
     $valueteststatus = "ontestshowpanel";
     $stauts = "activepanel";
     $stmt = $pdo->prepare("INSERT INTO marzban_panel (name_panel,inboundid,sublink,configManual,MethodUsername,statusTest,status) VALUES (?, ?, ?, ?, ?,?,?)");
@@ -2576,381 +2573,18 @@ if ($text == "🖥  اضافه کردن پنل") {
     update("marzban_panel", "username_panel", $text, "name_panel", $user['Processing_value']);
 } elseif ($user['step'] == "add_password_panel") {
     update("marzban_panel", "password_panel", $text, "name_panel", $user['Processing_value']);
-    $textx = "📌 نوع پنل را ارسال نمایید
+    $textx = "📌 Укажите тип панели
     
-⚠️ پنل x-ui فقط با پنل ثنایی نوع تک پورت سازگار است.
-⚠️ در صورت انتخاب پنل ثنایی پس از اضافه کردن پنل به بخش ویرایش پنل > تنظیم شناسه اینباند رفته و شناسه اینباند را ثبت کنید";
+⚠️ Панель x-ui совместима только с однопортовой панелью Thenaei.
+⚠️ Если вы выбрали панель Thenaei, после добавления панели перейдите в раздел редактирования панели > Настройка идентификатора входящего трафика и укажите идентификатор входящего трафика.";
     sendmessage($from_id, $textx, $typepanel, 'HTML');
     step('gettyppepanel', $from_id);
 } elseif ($user['step'] == "gettyppepanel") {
     update("marzban_panel", "type", $text, "name_panel", $user['Processing_value']);
     sendmessage($from_id, $textbotlang['Admin']['managepanel']['addedpanel'], $backadmin, 'HTML');
-    sendmessage($from_id, "🥳", $keyboardadmin, 'HTML');
+    sendmessage($from_id, "🥳 Панель успешно добавлена!", $keyboardadmin, 'HTML');
     step('home', $from_id);
 }
-if ($text == "📨 ارسال پیام") {
-    sendmessage($from_id, $textbotlang['users']['selectoption'], $sendmessageuser, 'HTML');
-} elseif ($text == "✉️ ارسال همگانی") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['GetText'], $backadmin, 'HTML');
-    step('getconfirmsendall', $from_id);
-}elseif($user['step'] == "getconfirmsendall"){
-    if(!$text){
-        sendmessage($from_id, "فقط ارسال متن مجاز است", $backadmin, 'HTML');
-        return;
-    }
-    savedata("clear","text",$text);
-    savedata("save","id_admin",$from_id);
-    sendmessage($from_id,"در صورت تایید متن زیر را ارسال نمایید
-    تایید", $backadmin, 'HTML');
-    step("gettextforsendall",$from_id);
-} elseif ($user['step'] == "gettextforsendall") {
-    $userdata  = json_decode($user['Processing_value'],true);
-    if($text == "تایید"){
-        step('home', $from_id);
-        $result = select("user","id","User_Status","Active","fetchAll");
-        $Respuseronse = json_encode([
-            'inline_keyboard' => [
-                [
-                    ['text' => "لغو ارسال", 'callback_data' => 'cancel_sendmessage'],
-                ],
-            ]
-        ]);
-        file_put_contents('cron/users.json',json_encode($result));
-        file_put_contents('cron/info',$user['Processing_value']);
-        sendmessage($from_id, "📌 پیام شما  در صف ارسال قرار گرفت پس از ارسال پیام تایید برای شما ارسال می شود ( ارسال پیام ممکن است  حداکثر 8 ساعت زمان ببرد بدلیل محدودیت های تلگرام )", $Respuseronse, 'HTML');
-    }
-}elseif($datain == "cancel_sendmessage"){
-    unlink('cron/users.json');
-    unlink('cron/info');
-    deletemessage($from_id, $message_id);
-    sendmessage($from_id, "📌 ارسال پیام لغو گردید.", null, 'HTML');
-} elseif ($text == "📤 فوروارد همگانی") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ForwardGetext'], $backadmin, 'HTML');
-    step('gettextforwardMessage', $from_id);
-} elseif ($user['step'] == "gettextforwardMessage") {
-    sendmessage($from_id, "درحال ارسال پیام", $keyboardadmin, 'HTML');
-    step('home', $from_id);
-    $filename = 'user.txt';
-    $stmt = $pdo->prepare("SELECT id FROM user");
-    $stmt->execute();
-    if ($result) {
-        $ids = array();
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $ids[] = $row['id'];
-        }
-        $idsText = implode("\n", $ids);
-        file_put_contents($filename, $idsText);
-    }
-    $file = fopen($filename, 'r');
-    if ($file) {
-        while (($line = fgets($file)) !== false) {
-            $line = trim($line);
-            forwardMessage($from_id, $message_id, $line);
-            usleep(2000000);
-        }
-        sendmessage($from_id, "✅ پیام به تمامی کاربران ارسال شد", $keyboardadmin, 'HTML');
-        fclose($file);
-    }
-    unlink($filename);
-}
-//_________________________________________________
-if ($text == "📝 تنظیم متن ربات") {
-    sendmessage($from_id, $textbotlang['users']['selectoption'], $textbot, 'HTML');
-} elseif ($text == "تنظیم متن شروع") {
-    $textstart = $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_start'];
-    sendmessage($from_id, $textstart, $backadmin, 'HTML');
-    step('changetextstart', $from_id);
-} elseif ($user['step'] == "changetextstart") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_start");
-    step('home', $from_id);
-} elseif ($text == "دکمه سرویس خریداری شده") {
-    $textstart = $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_Purchased_services'];
-    sendmessage($from_id, $textstart, $backadmin, 'HTML');
-    step('changetextinfo', $from_id);
-} elseif ($user['step'] == "changetextinfo") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_Purchased_services");
-    step('home', $from_id);
-} elseif ($text == "دکمه اکانت تست") {
-    $textstart = $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_usertest'];
-    sendmessage($from_id, $textstart, $backadmin, 'HTML');
-    step('changetextusertest', $from_id);
-} elseif ($user['step'] == "changetextusertest") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_usertest");
-    step('home', $from_id);
-} elseif ($text == "متن دکمه 📚 آموزش") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_help'], $backadmin, 'HTML');
-    step('text_help', $from_id);
-} elseif ($user['step'] == "text_help") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_help");
-    step('home', $from_id);
-} elseif ($text == "متن دکمه ☎️ پشتیبانی") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_support'], $backadmin, 'HTML');
-    step('text_support', $from_id);
-} elseif ($user['step'] == "text_support") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_support");
-    step('home', $from_id);
-} elseif ($text == "دکمه سوالات متداول") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_fq'], $backadmin, 'HTML');
-    step('text_fq', $from_id);
-} elseif ($user['step'] == "text_fq") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_fq");
-    step('home', $from_id);
-} elseif ($text == "📝 تنظیم متن توضیحات سوالات متداول") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_dec_fq'], $backadmin, 'HTML');
-    step('text_dec_fq', $from_id);
-} elseif ($user['step'] == "text_dec_fq") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_dec_fq");
-    step('home', $from_id);
-} elseif ($text == "📝 تنظیم متن توضیحات عضویت اجباری") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_channel'], $backadmin, 'HTML');
-    step('text_channel', $from_id);
-} elseif ($user['step'] == "text_channel") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_channel");
-    step('home', $from_id);
-} elseif ($text == "متن دکمه حساب کاربری") {
-    $textstart = $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_account'];
-    sendmessage($from_id, $textstart, $backadmin, 'HTML');
-    step('text_account', $from_id);
-} elseif ($user['step'] == "text_account") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_account");
-    step('home', $from_id);
-} elseif ($text == "دکمه افزایش موجودی") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_Add_Balance'], $backadmin, 'HTML');
-    step('text_Add_Balance', $from_id);
-} elseif ($user['step'] == "text_Add_Balance") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_Add_Balance");
-    step('home', $from_id);
-} elseif ($text == "متن دکمه خرید اشتراک") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_sell'], $backadmin, 'HTML');
-    step('text_sell', $from_id);
-} elseif ($user['step'] == "text_sell") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_sell");
-    step('home', $from_id);
-} elseif ($text == "متن دکمه لیست تعرفه") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_Tariff_list'], $backadmin, 'HTML');
-    step('text_Tariff_list', $from_id);
-} elseif ($user['step'] == "text_Tariff_list") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_Tariff_list");
-    step('home', $from_id);
-} elseif ($text == "متن توضیحات لیست تعرفه") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_dec_Tariff_list'], $backadmin, 'HTML');
-    step('text_dec_Tariff_list', $from_id);
-} elseif ($user['step'] == "text_dec_Tariff_list") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_dec_Tariff_list");
-    step('home', $from_id);
-}
-//_________________________________________________
-if ($text == "✍️ ارسال پیام برای یک کاربر") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['GetText'], $backadmin, 'HTML');
-    step('sendmessagetext', $from_id);
-} elseif ($user['step'] == "sendmessagetext") {
-    update("user", "Processing_value", $text, "id", $from_id);
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['GetIDMessage'], $backadmin, 'HTML');
-    step('sendmessagetid', $from_id);
-} elseif ($user['step'] == "sendmessagetid") {
-    if (!in_array($text, $users_ids)) {
-        sendmessage($from_id, $textbotlang['Admin']['not-user'], $backadmin, 'HTML');
-        return;
-    }
-    $textsendadmin = "
-                    👤 یک پیام از طرف ادمین ارسال شده است  
-    متن پیام:
-                {$user['Processing_value']}";
-    sendmessage($text, $textsendadmin, null, 'HTML');
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['MessageSent'], $keyboardadmin, 'HTML');
-    step('home', $from_id);
-}
-//_________________________________________________
-if ($text == "📚 بخش آموزش") {
-    sendmessage($from_id, $textbotlang['users']['selectoption'], $keyboardhelpadmin, 'HTML');
-} elseif ($text == "📚 اضافه کردن آموزش") {
-    sendmessage($from_id, $textbotlang['Admin']['Help']['GetAddNameHelp'], $backadmin, 'HTML');
-    step('add_name_help', $from_id);
-} elseif ($user['step'] == "add_name_help") {
-    $stmt = $pdo->prepare("INSERT IGNORE INTO help (name_os) VALUES (?)");
-    $stmt->bindParam(1, $text, PDO::PARAM_STR);
-    $stmt->execute();
-    sendmessage($from_id, $textbotlang['Admin']['Help']['GetAddDecHelp'], $backadmin, 'HTML');
-    step('add_dec', $from_id);
-    update("user", "Processing_value", $text, "id", $from_id);
-} elseif ($user['step'] == "add_dec") {
-    if ($photo) {
-        update("help", "Media_os", $photoid, "name_os", $user['Processing_value']);
-        update("help", "Description_os", $caption, "name_os", $user['Processing_value']);
-        update("help", "type_Media_os", "photo", "name_os", $user['Processing_value']);
-    } elseif ($text) {
-        update("help", "Description_os", $text, "name_os", $user['Processing_value']);
-    } elseif ($video) {
-        update("help", "Media_os", $videoid, "name_os", $user['Processing_value']);
-        update("help", "Description_os", $caption, "name_os", $user['Processing_value']);
-        update("help", "type_Media_os", "video", "name_os", $user['Processing_value']);
-    }
-    sendmessage($from_id, $textbotlang['Admin']['Help']['SaveHelp'], $keyboardadmin, 'HTML');
-    step('home', $from_id);
-} elseif ($text == "❌ حذف آموزش") {
-    sendmessage($from_id, $textbotlang['Admin']['Help']['SelectName'], $json_list_help, 'HTML');
-    step('remove_help', $from_id);
-} elseif ($user['step'] == "remove_help") {
-    $stmt = $pdo->prepare("DELETE FROM help WHERE name_os = ?");
-    $stmt->execute([$text]);
-    sendmessage($from_id, $textbotlang['Admin']['Help']['RemoveHelp'], $keyboardhelpadmin, 'HTML');
-    step('home', $from_id);
-}
-//_________________________________________________
-if (preg_match('/Response_(\w+)/', $datain, $dataget)) {
-    $iduser = $dataget[1];
-    update("user", "Processing_value", $iduser, "id", $from_id);
-    step('getmessageAsAdmin', $from_id);
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['GetTextResponse'], $backadmin, 'HTML');
-} elseif ($user['step'] == "getmessageAsAdmin") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SendMessageuser'], null, 'HTML');
-    if ($text) {
-        $textSendAdminToUser = "
-📩 یک پیام از سمت مدیریت برای شما ارسال گردید.
-                
-        متن پیام : 
-        $text";
-        sendmessage($user['Processing_value'], $textSendAdminToUser, null, 'HTML');
-    }
-    if ($photo) {
-        $textSendAdminToUser = "
-📩 یک پیام از سمت مدیریت برای شما ارسال گردید.
-                
-        متن پیام : 
-        $caption";
-        telegram('sendphoto', [
-            'chat_id' => $user['Processing_value'],
-            'photo' => $photoid,
-            'reply_markup' => $Response,
-            'caption' => $textSendAdminToUser,
-            'parse_mode' => "HTML",
-        ]);
-    }
-    step('home', $from_id);
-}
-//_________________________________________________
-if ($text == "👁‍🗨 وضعیت نمایش پنل") {
-    $panel = select("marzban_panel", "*", "name_panel", $user['Processing_value'], "select");
-    $view_Status = json_encode([
-        'inline_keyboard' => [
-            [
-                ['text' => $panel['status'], 'callback_data' => $panel['status']],
-            ],
-        ]
-    ]);
-    sendmessage($from_id,"📌 در این بخش می توانید مشخص نمایید  که پنل در بخش خرید برای کاربر در دسترس باشد یا خیر", $view_Status, 'HTML');
-}
-if ($datain == "activepanel") {
-    update("marzban_panel", "status", "disablepanel", "name_panel", $user['Processing_value']);
-    $panel = select("marzban_panel", "*", "name_panel", $user['Processing_value'], "select");
-    $view_Status = json_encode([
-        'inline_keyboard' => [
-            [
-                ['text' => $panel['status'], 'callback_data' => $panel['status']],
-            ],
-        ]
-    ]);
-    Editmessagetext($from_id, $message_id, "خاموش گردید.", $view_Status);
-} elseif ($datain == "disablepanel") {
-    update("marzban_panel", "status", "activepanel", "name_panel", $user['Processing_value']);
-    $panel = select("marzban_panel", "*", "name_panel", $user['Processing_value'], "select");
-    $view_Status = json_encode([
-        'inline_keyboard' => [
-            [
-                ['text' => $panel['status'], 'callback_data' => $panel['status']],
-            ],
-        ]
-    ]);
-    Editmessagetext($from_id, $message_id, "روشن گردید.", $view_Status);
-}
-//_________________________________________________
-if ($text == "🎁 وضعیت اکانت تست") {
-    $panel = select("marzban_panel", "*", "name_panel", $user['Processing_value'], "select");
-    $view_Status = json_encode([
-        'inline_keyboard' => [
-            [
-                ['text' => $panel['statusTest'], 'callback_data' => $panel['statusTest']],
-            ],
-        ]
-    ]);
-    sendmessage($from_id,"📌 در این بخش می توانید مشخص نمایید  که پنل در بخش اکانت تس برای کاربر در دسترس باشد یا خیر در صورت روشن کردن این قابلیت باید وضعیت نمایش پنل را خماوش کنید", $view_Status, 'HTML');
-}
-if ($datain == "ontestshowpanel") {
-    update("marzban_panel", "statusTest", "offtestshowpanel", "name_panel", $user['Processing_value']);
-    $panel = select("marzban_panel", "*", "name_panel", $user['Processing_value'], "select");
-    $view_Status = json_encode([
-        'inline_keyboard' => [
-            [
-                ['text' => $panel['statusTest'], 'callback_data' => $panel['statusTest']],
-            ],
-        ]
-    ]);
-    Editmessagetext($from_id, $message_id, "خاموش گردید.", $view_Status);
 } elseif ($datain == "offtestshowpanel") {
     update("marzban_panel", "statusTest", "ontestshowpanel", "name_panel", $user['Processing_value']);
     $panel = select("marzban_panel", "*", "name_panel", $user['Processing_value'], "select");
@@ -2992,7 +2626,7 @@ elseif (preg_match('/banuserlist_(\w+)/', $datain, $dataget)) {
     step('home', $from_id);
 }
 //_________________________________________________
-elseif ($text == "⚖️ متن قانون") {
+elseif ($text == "⚖️ Текст закона") {
     sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . $datatextbot['text_roll'], $backadmin, 'HTML');
     step('text_roll', $from_id);
 } elseif ($user['step'] == "text_roll") {
@@ -3001,17 +2635,17 @@ elseif ($text == "⚖️ متن قانون") {
     step('home', $from_id);
 }
 //_________________________________________________
-if ($text == "👤 خدمات کاربر") {
+if ($text == "👤 Услуги пользователя") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $User_Services, 'HTML');
 }
 #-------------------------#
 elseif (preg_match('/confirmnumber_(\w+)/', $datain, $dataget)) {
     $iduser = $dataget[1];
-    update("user", "number", "confrim number by admin", "id", $iduser);
+    update("user", "number", "номер подтвержден администратором", "id", $iduser);
     step('home', $iduser);
     sendmessage($from_id, $textbotlang['Admin']['phone']['active'], $User_Services, 'HTML');
 }
-if ($text == "📣 تنظیم کانال گزارش") {
+if ($text == "📣 Настройка канала отчетов") {
     sendmessage($from_id, $textbotlang['Admin']['Channel']['ReportChannel'] . $setting['Channel_Report'], $backadmin, 'HTML');
     step('addchannelid', $from_id);
 } elseif ($user['step'] == "addchannelid") {
@@ -3021,9 +2655,9 @@ if ($text == "📣 تنظیم کانال گزارش") {
     sendmessage($setting['Channel_Report'], $textbotlang['Admin']['Channel']['TestChannel'], null, 'HTML');
 }
 #-------------------------#
-if ($text == "🏬 بخش فروشگاه") {
+if ($text == "🏬 Раздел магазина") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $shopkeyboard, 'HTML');
-} elseif ($text == "🛍 اضافه کردن محصول") {
+} elseif ($text == "🛍 Добавить продукт") {
     $locationproduct = select("marzban_panel", "*", null, null, "count");
     if ($locationproduct == 0) {
         sendmessage($from_id, $textbotlang['Admin']['managepanel']['nullpaneladmin'], null, 'HTML');
@@ -3071,15 +2705,15 @@ if ($text == "🏬 بخش فروشگاه") {
     step('home', $from_id);
 }
 #-------------------------#
-if ($text == "👨‍🔧 بخش ادمین") {
+if ($text == "👨‍🔧 Раздел администратора") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $admin_section_panel, 'HTML');
 }
 #-------------------------#
-if ($text == "⚙️ تنظیمات") {
+if ($text == "⚙️ Настройки") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $setting_panel, 'HTML');
 }
 #-------------------------#
-if ($text == "🔑 تنظیمات اکانت تست") {
+if ($text == "🔑 Настройки тестового аккаунта") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $keyboard_usertest, 'HTML');
 }
 #-------------------------#
@@ -3102,11 +2736,11 @@ if (preg_match('/Confirm_pay_(\w+)/', $datain, $dataget)) {
     update("user","Processing_value_one","0", "id",$Balance_id['id']);
     update("user","Processing_value_tow","0", "id",$Balance_id['id']);
     update("Payment_report","payment_Status","paid","id_order",$order_id);
-    $text_report = "📣 یک ادمین رسید پرداخت کارت به کارت را تایید کرد.
+    $text_report = "📣 Администратор подтвердил оплату картой.
     
-    اطلاعات :
-    👤آیدی عددی  ادمین تایید کننده : $from_id
-    💰 مبلغ پرداخت : {$Payment_report['price']}
+    Информация:
+    👤 Числовой ID администратора, подтвердившего оплату: $from_id
+    💰 Сумма оплаты: {$Payment_report['price']}
     ";
     if (isset($setting['Channel_Report']) &&strlen($setting['Channel_Report']) > 0) {
         sendmessage($setting['Channel_Report'], $text_report, null, 'HTML');
@@ -3134,16 +2768,16 @@ if (preg_match('/reject_pay_(\w+)/', $datain, $datagetr)) {
     Editmessagetext($from_id, $message_id, $text_callback, null);
 } elseif ($user['step'] == "reject-dec") {
     update("Payment_report", "dec_not_confirmed", $text, "id_order", $user['Processing_value_one']);
-    $text_reject = "❌ کاربر گرامی پرداخت شما به دلیل زیر رد گردید.
+    $text_reject = "❌ Уважаемый пользователь, ваш платеж был отклонен по следующей причине:
 ✍️ $text
-🛒 کد پیگیری پرداخت: {$user['Processing_value_one']}
+🛒 Код отслеживания платежа: {$user['Processing_value_one']}
             ";
     sendmessage($from_id, $textbotlang['Admin']['Payment']['Rejected'], $keyboardadmin, 'HTML');
     sendmessage($user['Processing_value'], $text_reject, null, 'HTML');
     step('home', $from_id);
 }
 #-------------------------#
-if ($text == "❌ حذف محصول") {
+if ($text == "❌ Удалить продукт") {
     sendmessage($from_id, $textbotlang['Admin']['Product']['Rmove_location'], $json_list_marzban_panel, 'HTML');
     step('selectloc', $from_id);
 } elseif ($user['step'] == "selectloc") {
@@ -3162,7 +2796,7 @@ if ($text == "❌ حذف محصول") {
     step('home', $from_id);
 }
 #-------------------------#
-if ($text == "✏️ ویرایش محصول") {
+if ($text == "✏️ Редактировать продукт") {
     sendmessage($from_id, $textbotlang['Admin']['Product']['Rmove_location'], $json_list_marzban_panel, 'HTML');
     step('selectlocedite', $from_id);
 } elseif ($user['step'] == "selectlocedite") {
@@ -3179,8 +2813,8 @@ if ($text == "✏️ ویرایش محصول") {
     step('home', $from_id);
 }
 #-------------------------#
-if ($text == "قیمت") {
-    sendmessage($from_id, "قیمت جدید را ارسال کنید", $backadmin, 'HTML');
+if ($text == "Цена") {
+    sendmessage($from_id, "Отправьте новую цену", $backadmin, 'HTML');
     step('change_price', $from_id);
 } elseif ($user['step'] == "change_price") {
     if (!ctype_digit($text)) {
@@ -3192,12 +2826,12 @@ if ($text == "قیمت") {
     $stmtFirst->execute([$text, $user['Processing_value'], $user['Processing_value_one'], $location]);
     $stmtSecond = $pdo->prepare("UPDATE invoice SET price_product = ? WHERE name_product = ? AND Service_location = ?");
     $stmtSecond->execute([$text, $user['Processing_value'], $user['Processing_value_one']]);
-    sendmessage($from_id, "✅ قیمت محصول بروزرسانی شد", $shopkeyboard, 'HTML');
+    sendmessage($from_id, "✅ Цена продукта обновлена", $shopkeyboard, 'HTML');
     step('home', $from_id);
 }
 #-------------------------#
-if ($text == "نام محصول") {
-    sendmessage($from_id, "نام جدید را ارسال کنید", $backadmin, 'HTML');
+if ($text == "Название продукта") {
+    sendmessage($from_id, "Отправьте новое название", $backadmin, 'HTML');
     step('change_name', $from_id);
 } elseif ($user['step'] == "change_name") {
     $value = "/all";
@@ -3206,12 +2840,12 @@ if ($text == "نام محصول") {
     $sqlSecond = "UPDATE invoice SET name_product = ? WHERE name_product = ? AND Service_location = ?";
     $stmtSecond = $pdo->prepare($sqlSecond);
     $stmtSecond->execute([$text, $user['Processing_value'], $user['Processing_value_one']]);
-    sendmessage($from_id, "✅نام محصول بروزرسانی شد", $shopkeyboard, 'HTML');
+    sendmessage($from_id, "✅ Название продукта обновлено", $shopkeyboard, 'HTML');
     step('home', $from_id);
 }
 #-------------------------#
-if ($text == "حجم") {
-    sendmessage($from_id, "حجم جدید را ارسال کنید", $backadmin, 'HTML');
+if ($text == "Объем") {
+    sendmessage($from_id, "Отправьте новый объем", $backadmin, 'HTML');
     step('change_val', $from_id);
 } elseif ($user['step'] == "change_val") {
     if (!ctype_digit($text)) {
@@ -3228,7 +2862,7 @@ if ($text == "حجم") {
     step('home', $from_id);
 }
 #-------------------------#
-if ($text == "زمان") {
+if ($text == "Время") {
     sendmessage($from_id, $textbotlang['Admin']['Product']['NewTime'], $backadmin, 'HTML');
     step('change_time', $from_id);
 } elseif ($user['step'] == "change_time") {
@@ -3250,10 +2884,10 @@ if ($text == "زمان") {
     step('home', $from_id);
 }
 #-------------------------#
-if ($text == "⏳ زمان سرویس تست") {
-    sendmessage($from_id, "🕰 مدت زمان سرویس تست را ارسال کنید.
-زمان فعلی: {$setting['time_usertest']} ساعت
-⚠️ زمان بر حسب ساعت است.", $backadmin, 'HTML');
+if ($text == "⏳ Время тестового сервиса") {
+    sendmessage($from_id, "🕰 Отправьте продолжительность тестового сервиса.
+Текущее время: {$setting['time_usertest']} часов
+⚠️ Время указывается в часах.", $backadmin, 'HTML');
     step('updatetime', $from_id);
 } elseif ($user['step'] == "updatetime") {
     if (!ctype_digit($text)) {
@@ -3265,10 +2899,10 @@ if ($text == "⏳ زمان سرویس تست") {
     step('home', $from_id);
 }
 #-------------------------#
-if ($text == "💾 حجم اکانت تست") {
-    sendmessage($from_id, "حجم سرویس تست را ارسال کنید.
-حجم فعلی: {$setting['val_usertest']} مگابایت
-⚠️ حجم بر حسب مگابایت است.", $backadmin, 'HTML');
+if ($text == "💾 Объем тестового аккаунта") {
+    sendmessage($from_id, "Отправьте объем тестового сервиса.
+Текущий объем: {$setting['val_usertest']} мегабайт
+⚠️ Объем указывается в мегабайтах.", $backadmin, 'HTML');
     step('val_usertest', $from_id);
 } elseif ($user['step'] == "val_usertest") {
     if (!ctype_digit($text)) {
@@ -3291,7 +2925,7 @@ elseif (preg_match('/addbalanceuser_(\w+)/', $datain, $dataget)) {
         return;
     }
     if(intval($text) > 100000000){
-        sendmessage($from_id, "حداکثر ۱۰۰ میلیون تومان می باشد", $backadmin, 'HTML');
+        sendmessage($from_id, "Максимальная сумма 100 миллионов рублей", $backadmin, 'HTML');
         return;
     }
     sendmessage($from_id, $textbotlang['Admin']['Balance']['AddBalanceUser'], $User_Services, 'HTML');
@@ -3299,7 +2933,7 @@ elseif (preg_match('/addbalanceuser_(\w+)/', $datain, $dataget)) {
     $Balance_add_user = $Balance_user['Balance'] + $text;
     update("user", "Balance", $Balance_add_user, "id", $user['Processing_value']);
     $text = number_format($text);
-    $textadd = "💎 کاربر عزیز مبلغ $text تومان به موجودی کیف پول تان اضافه گردید.";
+    $textadd = "💎 Уважаемый пользователь, на ваш кошелек добавлено $text рублей.";
     sendmessage($user['Processing_value'], $textadd, null, 'HTML');
     step('home', $from_id);
 }
@@ -3315,7 +2949,7 @@ elseif (preg_match('/lowbalanceuser_(\w+)/', $datain, $dataget)) {
         return;
     }
     if(intval($text) > 100000000){
-        sendmessage($from_id, "حداکثر ۱۰۰ میلیون تومان می باشد", $backadmin, 'HTML');
+        sendmessage($from_id, "Максимальная сумма 100 миллионов рублей", $backadmin, 'HTML');
         return;
     }
     sendmessage($from_id, $textbotlang['Admin']['Balance']['NegativeBalanceUser'], $User_Services, 'HTML');
@@ -3323,12 +2957,12 @@ elseif (preg_match('/lowbalanceuser_(\w+)/', $datain, $dataget)) {
     $Balance_Low_user = $Balance_user['Balance'] - $text;
     update("user", "Balance", $Balance_Low_user, "id", $user['Processing_value']);
     $text = number_format($text);
-    $textkam = "❌ کاربر عزیز مبلغ $text تومان از  موجودی کیف پول تان کسر گردید.";
+    $textkam = "❌ Уважаемый пользователь, с вашего кошелька было списано $text рублей.";
     sendmessage($user['Processing_value'], $textkam, null, 'HTML');
     step('home', $from_id);
 }
 #-------------------------#
-if ($text == "🎁 ساخت کد هدیه") {
+if ($text == "🎁 Создать подарочный код") {
     sendmessage($from_id, $textbotlang['Admin']['Discount']['GetCode'], $backadmin, 'HTML');
     step('get_code', $from_id);
 } elseif ($user['step'] == "get_code") {
@@ -3353,7 +2987,7 @@ if ($text == "🎁 ساخت کد هدیه") {
     step('home', $from_id);
 }
 #-------------------------#
-if ($text == "🔗 ارسال لینک سابسکرایبشن") {
+if ($text == "🔗 Отправить ссылку на подписку") {
     $panel = select("marzban_panel", "*", "name_panel", $user['Processing_value'], "select");
     if ($panel['sublink'] == null) {
         update("marzban_panel", "sublink", "onsublink", "name_panel", $user['Processing_value']);
@@ -3367,7 +3001,7 @@ if ($text == "🔗 ارسال لینک سابسکرایبشن") {
         ]
     ]);
     if ($panel['configManual'] == "onconfig") {
-        sendmessage($from_id, "ابتدا  ارسال کانفیگ را خاموش کنید", null, 'HTML');
+        sendmessage($from_id, "Сначала отключите отправку конфигурации", null, 'HTML');
         return;
     }
     sendmessage($from_id, $textbotlang['Admin']['Status']['subTitle'], $sublinkkeyboard, 'HTML');
@@ -3397,7 +3031,7 @@ if ($datain == "onsublink") {
     Editmessagetext($from_id, $message_id, $textbotlang['Admin']['Status']['subStatuson'], $sublinkkeyboard);
 }
 #-------------------------#
-if ($text == "⚙️ارسال کانفیگ") {
+if ($text == "⚙️ Отправить конфигурацию") {
     $panel = select("marzban_panel", "*", "name_panel", $user['Processing_value'], "select");
     if ($panel['configManual'] == null) {
         update("marzban_panel", "configManual", "offconfig", "name_panel", $user['Processing_value']);
@@ -3411,7 +3045,7 @@ if ($text == "⚙️ارسال کانفیگ") {
         ]
     ]);
     if ($panel['sublink'] == "onsublink") {
-        sendmessage($from_id, "ابتدا لینک اشتراک را خاموش کنید", null, 'HTML');
+        sendmessage($from_id, "Сначала отключите ссылку на подписку", null, 'HTML');
         return;
     }
     sendmessage($from_id, $textbotlang['Admin']['Status']['configTitle'], $configkeyboard, 'HTML');
@@ -3439,8 +3073,8 @@ if ($datain == "onconfig") {
     ]);
     Editmessagetext($from_id, $message_id, $textbotlang['Admin']['Status']['configStatuson'], $configkeyboard);
 }
-#----------------[  view order user  ]------------------#
-if ($text == "🛍 مشاهده سفارشات کاربر") {
+#----------------[  Просмотр заказов пользователя  ]------------------#
+if ($text == "🛍 Просмотр заказов пользователя") {
     sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ViewOrder'], $backadmin, 'HTML');
     step('GetIdAndOrdedrs', $from_id);
 } elseif ($user['step'] == "GetIdAndOrdedrs") {
@@ -3452,16 +3086,16 @@ if ($text == "🛍 مشاهده سفارشات کاربر") {
     foreach ($OrderUsers as $OrderUser) {
         $timeacc = jdate('Y/m/d H:i:s', $OrderUser['time_sell']);
         $text_order = "
-🛒 شماره سفارش  :  <code>{$OrderUser['id_invoice']}</code>
-وضعیت سفارش : <code>{$OrderUser['Status']}</code>
-🙍‍♂️ شناسه کاربر : <code>{$OrderUser['id_user']}</code>
-👤 نام کاربری اشتراک :  <code>{$OrderUser['username']}</code> 
-📍 لوکیشن سرویس :  {$OrderUser['Service_location']}
-🛍 نام محصول :  {$OrderUser['name_product']}
-💰 قیمت پرداختی سرویس : {$OrderUser['price_product']} تومان
-⚜️ حجم سرویس خریداری شده : {$OrderUser['Volume']}
-⏳ زمان سرویس خریداری شده : {$OrderUser['Service_time']} روزه
-📆 تاریخ خرید : $timeacc
+🛒 Номер заказа:  <code>{$OrderUser['id_invoice']}</code>
+Статус заказа: <code>{$OrderUser['Status']}</code>
+🙍‍♂️ Идентификатор пользователя: <code>{$OrderUser['id_user']}</code>
+👤 Имя пользователя подписки:  <code>{$OrderUser['username']}</code> 
+📍 Локация сервиса:  {$OrderUser['Service_location']}
+🛍 Название продукта:  {$OrderUser['name_product']}
+💰 Цена оплаченного сервиса: {$OrderUser['price_product']} рублей
+⚜️ Объем приобретенного сервиса: {$OrderUser['Volume']}
+⏳ Время приобретенного сервиса: {$OrderUser['Service_time']} дней
+📆 Дата покупки: $timeacc
                 ";
         sendmessage($from_id, $text_order, null, 'HTML');
     }
@@ -3469,7 +3103,7 @@ if ($text == "🛍 مشاهده سفارشات کاربر") {
     step('home', $from_id);
 }
 #----------------[  remove Discount   ]------------------#
-if ($text == "❌ حذف کد هدیه") {
+if ($text == "❌ Удалить подарочный код") {
     sendmessage($from_id, $textbotlang['Admin']['Discount']['RemoveCode'], $json_list_Discount_list_admin, 'HTML');
     step('remove-Discount', $from_id);
 } elseif ($user['step'] == "remove-Discount") {
@@ -3483,7 +3117,7 @@ if ($text == "❌ حذف کد هدیه") {
     sendmessage($from_id, $textbotlang['Admin']['Discount']['RemovedCode'], $shopkeyboard, 'HTML');
 }
 #----------------[  REMOVE protocol   ]------------------#
-if ($text == "🗑 حذف پروتکل") {
+if ($text == "🗑 Удалить протокол") {
     sendmessage($from_id, $textbotlang['Admin']['Protocol']['RemoveProtocol'], $keyboardprotocollist, 'HTML');
     step('removeprotocol', $from_id);
 } elseif ($user['step'] == "removeprotocol") {
@@ -3497,7 +3131,7 @@ if ($text == "🗑 حذف پروتکل") {
     $stmt->execute();
     step('home', $from_id);
 }
-if ($text == "❌ حذف سرویس کاربر") {
+if ($text == "❌ Удалить сервис пользователя") {
     sendmessage($from_id, $textbotlang['Admin']['ManageUser']['RemoveService'], $backadmin, 'HTML');
     step('removeservice', $from_id);
 } elseif ($user['step'] == "removeservice") {
@@ -3513,18 +3147,18 @@ if ($text == "❌ حذف سرویس کاربر") {
     sendmessage($from_id, $textbotlang['Admin']['ManageUser']['RemovedService'], $keyboardadmin, 'HTML');
     step('home', $from_id);
 }
-if ($text == "💡 روش ساخت نام کاربری") {
-    $text_username = "⭕️ روش ساخت نام کاربری برای اکانت ها را از دکمه زیر انتخاب نمایید.
+if ($text == "💡 Метод создания имени пользователя") {
+    $text_username = "⭕️ Выберите метод создания имени пользователя для аккаунтов из кнопки ниже.
     
-    ⚠️ در صورتی که کاربری نام کاربری نداشته باشه کلمه NOT_USERNAME جای نام کاربری اعمال خواهد شد.
+    ⚠️ Если у пользователя нет имени пользователя, слово NOT_USERNAME будет применено вместо имени пользователя.
     
-    ⚠️ در صورتی که نام کاربری وجود داشته باشه یک عدد رندوم به نام کاربری اضافه خواهد شد";
+    ⚠️ Если имя пользователя существует, к имени пользователя будет добавлено случайное число.";
     sendmessage($from_id, $text_username, $MethodUsername, 'HTML');
     step('updatemethodusername', $from_id);
 } elseif ($user['step'] == "updatemethodusername") {
     update("marzban_panel", "MethodUsername", $text, "name_panel", $user['Processing_value']);
     sendmessage($from_id, $textbotlang['Admin']['AlgortimeUsername']['SaveData'], $keyboardadmin, 'HTML');
-    if ($text == "متن دلخواه + عدد رندوم") {
+    if ($text == "Произвольный текст + случайное число") {
         step('getnamecustom', $from_id);
         sendmessage($from_id, $textbotlang['Admin']['managepanel']['customnamesend'], $backuser, 'HTML');
         return;
@@ -3553,19 +3187,19 @@ if ($text == "💡 روش ساخت نام کاربری") {
 }
 #----------------[  MANAGE PAYMENT   ]------------------#
 
-if ($text == "💵 مالی") {
+if ($text == "💵 Финансы") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $keyboardpaymentManage, 'HTML');
 }
-if ($text == "💳 تنظبمات درگاه آفلاین") {
+if ($text == "💳 Настройки оффлайн шлюза") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $CartManage, 'HTML');
 }
-if ($text == "💳 تنظیم شماره کارت") {
+if ($text == "💳 Настройка номера карты") {
     $PaySetting = select("PaySetting", "ValuePay", "NamePay", "CartDescription", "select");
-    $textcart = "💳 شماره کارت خود را ارسال کنید
+    $textcart = "💳 Отправьте номер своей карты
     
-    ⭕️ همراه با شماره کارت می توانید نام صاحب کارت هم ارسال نمایید.
+    ⭕️ Вместе с номером карты вы можете отправить имя владельца карты.
     
-    💳 شماره کارت فعلی شما : {$PaySetting['ValuePay']}";
+    💳 Текущий номер вашей карты: {$PaySetting['ValuePay']}";
     sendmessage($from_id, $textcart, $backadmin, 'HTML');
     step('changecard', $from_id);
 } elseif ($user['step'] == "changecard") {
@@ -3573,7 +3207,7 @@ if ($text == "💳 تنظیم شماره کارت") {
     update("PaySetting", "ValuePay", $text, "NamePay", "CartDescription");
     step('home', $from_id);
 }
-if ($text == "🔌 وضعیت درگاه آفلاین") {
+if ($text == "🔌 Статус оффлайн шлюза") {
     $PaySetting = select("PaySetting", "ValuePay", "NamePay", "Cartstatus", "select")['ValuePay'];
     $card_Status = json_encode([
         'inline_keyboard' => [
@@ -3591,14 +3225,14 @@ if ($datain == "oncard") {
     update("PaySetting", "ValuePay", "oncard", "NamePay", "Cartstatus");
     Editmessagetext($from_id, $message_id, $textbotlang['Admin']['Status']['cardStatuson'], null);
 }
-if ($text == "💵 تنظیمات nowpayment") {
+if ($text == "💵 Настройки nowpayment") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $NowPaymentsManage, 'HTML');
 }
 if ($text == "🧩 api nowpayment") {
     $PaySetting = select("PaySetting", "ValuePay", "NamePay", "apinowpayment", "select")['ValuePay'];
-    $textcart = "⚙️ api سایت nowpayments.io را ارسال نمایید
+    $textcart = "⚙️ Отправьте api сайта nowpayments.io
     
-    api nowpayment :$PaySetting";
+    api nowpayment: $PaySetting";
     sendmessage($from_id, $textcart, $backadmin, 'HTML');
     step('apinowpayment', $from_id);
 } elseif ($user['step'] == "apinowpayment") {
@@ -3606,7 +3240,7 @@ if ($text == "🧩 api nowpayment") {
     update("PaySetting", "ValuePay", $text, "NamePay", "apinowpayment");
     step('home', $from_id);
 }
-if ($text == "🔌 وضعیت درگاه nowpayments") {
+if ($text == "🔌 Статус шлюза nowpayments") {
     $PaySetting = select("PaySetting", "ValuePay", "NamePay", "nowpaymentstatus", "select")['ValuePay'];
     $now_Status = json_encode([
         'inline_keyboard' => [
@@ -3624,7 +3258,7 @@ if ($datain == "onnowpayment") {
     update("PaySetting", "ValuePay", "onnowpayment", "NamePay", "nowpaymentstatus");
     Editmessagetext($from_id, $message_id, $textbotlang['Admin']['Status']['nowpaymentsStatuson'], null);
 }
-if ($text == "💎 درگاه ارزی ریالی") {
+if ($text == "💎 Валютный платежный шлюз") {
     $PaySetting = select("PaySetting", "ValuePay", "NamePay", "digistatus", "select")['ValuePay'];
     $digi_Status = json_encode([
         'inline_keyboard' => [
@@ -3642,14 +3276,14 @@ if ($datain == "offdigi") {
     update("PaySetting", "ValuePay", "offdigi", "NamePay", "digistatus");
     Editmessagetext($from_id, $message_id, $textbotlang['Admin']['Status']['digiStatusOff'], null);
 }
-if ($text == "🟡  درگاه زرین پال") {
+if ($text == "🟡  шлюз Zarinpal") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $zarinpal, 'HTML');
 }
-if ($text == "تنظیم مرچنت") {
+if ($text == "Настроить Merchant ID") {
     $PaySetting = select("PaySetting", "ValuePay", "NamePay", "merchant_id", "select");
-    $textzarinpal = "💳 مرچنت کد خود را از زرین پال دریافت و در این قسمت وارد کنید
+    $textzarinpal = "💳 Введите ваш Merchant ID, полученный от Zarinpal
     
-    مرچنت کد فعلی شما : {$PaySetting['ValuePay']}";
+    Текущий Merchant ID: {$PaySetting['ValuePay']}";
     sendmessage($from_id, $textzarinpal, $backadmin, 'HTML');
     step('merchant_id', $from_id);
 } elseif ($user['step'] == "merchant_id") {
@@ -3657,7 +3291,7 @@ if ($text == "تنظیم مرچنت") {
     update("PaySetting", "ValuePay", $text, "NamePay", "merchant_id");
     step('home', $from_id);
 }
-if ($text == "وضعیت درگاه زرین پال") {
+if ($text == "Статус шлюза Zarinpal") {
     $PaySetting = select("PaySetting", "ValuePay", "NamePay", "statuszarinpal", "select")['ValuePay'];
     $zarinpal_Status = json_encode([
         'inline_keyboard' => [
@@ -3675,14 +3309,14 @@ if ($datain == "offzarinpal") {
     update("PaySetting", "ValuePay", "offzarinpal", "NamePay", "statuszarinpal");
     Editmessagetext($from_id, $message_id, $textbotlang['Admin']['Status']['zarrinpalStatusOff'], null);
 }
-if ($text == "🔵 درگاه آقای پرداخت") {
+if ($text == "🔵 шлюз Aqayepardakht") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $aqayepardakht, 'HTML');
 }
-if ($text == "تنظیم مرچنت آقای پرداخت") {
+if ($text == "Настроить Merchant ID Aqayepardakht") {
     $PaySetting = select("PaySetting", "ValuePay", "NamePay", "merchant_id_aqayepardakht", "select");
-    $textaqayepardakht = "💳 مرچنت کد خود را ازآقای پرداخت دریافت و در این قسمت وارد کنید
+    $textaqayepardakht = "💳 Введите ваш Merchant ID, полученный от Aqayepardakht
     
-    مرچنت کد فعلی شما : {$PaySetting['ValuePay']}";
+    Текущий Merchant ID: {$PaySetting['ValuePay']}";
     sendmessage($from_id, $textaqayepardakht, $backadmin, 'HTML');
     step('merchant_id_aqayepardakht', $from_id);
 } elseif ($user['step'] == "merchant_id_aqayepardakht") {
@@ -3690,7 +3324,7 @@ if ($text == "تنظیم مرچنت آقای پرداخت") {
     update("PaySetting", "ValuePay", $text, "NamePay", "merchant_id_aqayepardakht");
     step('home', $from_id);
 }
-if ($text == "وضعیت درگاه آقای پرداخت") {
+if ($text == "Статус шлюза Aqayepardakht") {
     $PaySetting = select("PaySetting", "ValuePay", "NamePay", "statusaqayepardakht", "select")['ValuePay'];
     $aqayepardakht_Status = json_encode([
         'inline_keyboard' => [
@@ -3708,7 +3342,7 @@ if ($datain == "offaqayepardakht") {
     update("PaySetting", "ValuePay", "offaqayepardakht", "NamePay", "statusaqayepardakht");
     Editmessagetext($from_id, $message_id, $textbotlang['Admin']['Status']['aqayepardakhtStatusOff'], null);
 }
-if ($text == "✏️ مدیریت پنل") {
+if ($text == "✏️ Управление панелью") {
     sendmessage($from_id, $textbotlang['Admin']['managepanel']['getloc'], $json_list_marzban_panel, 'HTML');
     step('GetLocationEdit', $from_id);
 } elseif ($user['step'] == "GetLocationEdit") {
@@ -3726,7 +3360,7 @@ if ($text == "✏️ مدیریت پنل") {
         sendmessage($from_id, $textbotlang['users']['selectoption'], $optionMarzban, 'HTML');
     }
     step('home', $from_id);
-} elseif ($text == "✍️ نام پنل") {
+} elseif ($text == "✍️ Название панели") {
     sendmessage($from_id, $textbotlang['Admin']['managepanel']['GetNameNew'], $backadmin, 'HTML');
     step('GetNameNew', $from_id);
 } elseif ($user['step'] == "GetNameNew") {
@@ -3745,7 +3379,7 @@ if ($text == "✏️ مدیریت پنل") {
     update("product", "Location", $text, "Location", $user['Processing_value']);
     update("user", "Processing_value", $text, "id", $from_id);
     step('home', $from_id);
-} elseif ($text == "🔗 ویرایش آدرس پنل") {
+} elseif ($text == "🔗 Редактировать адрес панели") {
     sendmessage($from_id, $textbotlang['Admin']['managepanel']['geturlnew'], $backadmin, 'HTML');
     step('GeturlNew', $from_id);
 } elseif ($user['step'] == "GeturlNew") {
@@ -3765,7 +3399,7 @@ if ($text == "✏️ مدیریت پنل") {
     }
     update("marzban_panel", "url_panel", $text, "name_panel", $user['Processing_value']);
     step('home', $from_id);
-} elseif ($text == "👤 ویرایش نام کاربری") {
+} elseif ($text == "👤 Редактировать имя пользователя") {
     sendmessage($from_id, $textbotlang['Admin']['managepanel']['getusernamenew'], $backadmin, 'HTML');
     step('GetusernameNew', $from_id);
 } elseif ($user['step'] == "GetusernameNew") {
@@ -3781,7 +3415,7 @@ if ($text == "✏️ مدیریت پنل") {
     }
     update("marzban_panel", "username_panel", $text, "name_panel", $user['Processing_value']);
     step('home', $from_id);
-} elseif ($text == "🔐 ویرایش رمز عبور") {
+} elseif ($text == "🔐 Редактировать пароль") {
     sendmessage($from_id, $textbotlang['Admin']['managepanel']['getpasswordnew'], $backadmin, 'HTML');
     step('GetpaawordNew', $from_id);
 } elseif ($user['step'] == "GetpaawordNew") {
@@ -3797,14 +3431,14 @@ if ($text == "✏️ مدیریت پنل") {
     }
     update("marzban_panel", "password_panel", $text, "name_panel", $user['Processing_value']);
     step('home', $from_id);
-} elseif ($text == "💎 تنظیم شناسه اینباند") {
-    sendmessage($from_id, "📌 شناسه اینباندی که می خواهید کانفیگ از آن ساخته شود را ارسال نمایید.", $backadmin, 'HTML');
+} elseif ($text == "💎 Настроить идентификатор входящего трафика") {
+    sendmessage($from_id, "📌 Отправьте идентификатор входящего трафика, который вы хотите использовать для создания конфигурации.", $backadmin, 'HTML');
     step('getinboundiid', $from_id);
 } elseif ($user['step'] == "getinboundiid") {
-    sendmessage($from_id, "✅ شناسه اینباند با موفقیت ذخیره گردید", $optionX_ui_single, 'HTML');
+    sendmessage($from_id, "✅ Идентификатор входящего трафика успешно сохранен", $optionX_ui_single, 'HTML');
     update("marzban_panel", "inboundid", $text, "name_panel", $user['Processing_value']);
     step('home', $from_id);
-} elseif ($text == "🔗 دامنه لینک ساب") {
+} elseif ($text == "🔗 Домен ссылки подписки") {
     sendmessage($from_id, $textbotlang['Admin']['managepanel']['geturlnew'], $backadmin, 'HTML');
     step('GeturlNewx', $from_id);
 } elseif ($user['step'] == "GeturlNewx") {
@@ -3820,13 +3454,13 @@ if ($text == "✏️ مدیریت پنل") {
     update("marzban_panel", "password_panel", $text, "name_panel", $user['Processing_value']);
     step('home', $from_id);
 }
-if ($text == "❌ حذف پنل") {
+if ($text == "❌ Удалить панель") {
     sendmessage($from_id, $textbotlang['Admin']['managepanel']['RemovedPanel'], $keyboardadmin, 'HTML');
     $stmt = $pdo->prepare("DELETE FROM marzban_panel WHERE name_panel = ?");
     $stmt->bindParam(1, $user['Processing_value']);
     $stmt->execute();
 }
-if ($text == "➕ تنظیم قیمت حجم اضافه") {
+if ($text == "➕ Настроить цену за дополнительный объем") {
     sendmessage($from_id, $textbotlang['users']['Extra_volume']['SetPrice'] . $setting['Extra_volume'], $backadmin, 'HTML');
     step('GetPriceExtra', $from_id);
 } elseif ($user['step'] == "GetPriceExtra") {
@@ -3839,7 +3473,7 @@ if ($text == "➕ تنظیم قیمت حجم اضافه") {
     step('home', $from_id);
 }
 #-------------------------#
-if ($text == "👥 شارژ همگانی") {
+if ($text == "👥 Массовое пополнение баланса") {
     sendmessage($from_id, $textbotlang['Admin']['Balance']['addallbalance'], $backadmin, 'HTML');
     step('add_Balance_all', $from_id);
 } elseif ($user['step'] == "add_Balance_all") {
@@ -3855,41 +3489,41 @@ if ($text == "👥 شارژ همگانی") {
     }
     step('home', $from_id);
 }
-if ($text == "🔴 درگاه پرفکت مانی") {
+if ($text == "🔴 Шлюз Perfect Money") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $perfectmoneykeyboard, 'HTML');
-} elseif ($text == "تنظیم شماره اکانت") {
+} elseif ($text == "Настроить номер аккаунта") {
     $PaySetting = select("PaySetting", "ValuePay", "NamePay", "perfectmoney_AccountID", "select")['ValuePay'];
-    sendmessage($from_id, "⭕️ شماره اکانت پرفکت مانی خود را ارسال کنید
-    مثال : 93293828
-    شماره اکانت فعلی : $PaySetting", $backadmin, 'HTML');
+    sendmessage($from_id, "⭕️ Отправьте номер вашего аккаунта Perfect Money
+    Пример: 93293828
+    Текущий номер аккаунта: $PaySetting", $backadmin, 'HTML');
     step('setnumberaccount', $from_id);
 } elseif ($user['step'] == "setnumberaccount") {
     sendmessage($from_id, $textbotlang['Admin']['perfectmoney']['setnumberacount'], $perfectmoneykeyboard, 'HTML');
     update("PaySetting", "ValuePay", $text, "NamePay", "perfectmoney_AccountID");
     step('home', $from_id);
 }
-if ($text == "تنظیم شماره کیف پول") {
+if ($text == "Настроить номер кошелька") {
     $PaySetting = select("PaySetting", "ValuePay", "NamePay", "perfectmoney_Payer_Account", "select")['ValuePay'];
-    sendmessage($from_id, "⭕️ شماره کیف پولی که میخواهید ووچر پرفکت مانی به آن واریز شود را ارسال کنید 
-    مثال : u234082394
-    شماره کیف پول فعلی : $PaySetting", $backadmin, 'HTML');
+    sendmessage($from_id, "⭕️ Отправьте номер кошелька, на который вы хотите перевести ваучер Perfect Money
+    Пример: u234082394
+    Текущий номер кошелька: $PaySetting", $backadmin, 'HTML');
     step('perfectmoney_Payer_Account', $from_id);
 } elseif ($user['step'] == "perfectmoney_Payer_Account") {
     sendmessage($from_id, $textbotlang['Admin']['perfectmoney']['setnumberacount'], $perfectmoneykeyboard, 'HTML');
     update("PaySetting", "ValuePay", $text, "NamePay", "perfectmoney_Payer_Account");
     step('home', $from_id);
 }
-if ($text == "تنظیم رمز اکانت") {
+if ($text == "Настроить пароль аккаунта") {
     $PaySetting = select("PaySetting", "ValuePay", "NamePay", "perfectmoney_PassPhrase", "select")['ValuePay'];
-    sendmessage($from_id, "⭕️ رمز اکانت پرفکت مانی خود را ارسال کنید
-    رمز عبور فعلی : $PaySetting", $backadmin, 'HTML');
+    sendmessage($from_id, "⭕️ Отправьте пароль вашего аккаунта Perfect Money
+    Текущий пароль: $PaySetting", $backadmin, 'HTML');
     step('perfectmoney_PassPhrase', $from_id);
 } elseif ($user['step'] == "perfectmoney_PassPhrase") {
     sendmessage($from_id, $textbotlang['Admin']['perfectmoney']['setnumberacount'], $perfectmoneykeyboard, 'HTML');
     update("PaySetting", "ValuePay", $text, "NamePay", "perfectmoney_PassPhrase");
     step('home', $from_id);
 }
-if ($text == "وضعیت پرفکت مانی") {
+if ($text == "Статус Perfect Money") {
     $PaySetting = select("PaySetting", "ValuePay", "NamePay", "status_perfectmoney", "select")['ValuePay'];
     $status_perfectmoney = json_encode([
         'inline_keyboard' => [
@@ -3907,12 +3541,12 @@ if ($datain == "offperfectmoney") {
     update("PaySetting", "ValuePay", "offperfectmoney", "NamePay", "status_perfectmoney");
     Editmessagetext($from_id, $message_id, $textbotlang['Admin']['Status']['perfectmoneyStatusOff'], null);
 }
-if ($text == "🎁 ساخت کد تخفیف") {
+if ($text == "🎁 Создать код скидки") {
     sendmessage($from_id, $textbotlang['Admin']['Discountsell']['GetCode'], $backadmin, 'HTML');
     step('get_codesell', $from_id);
 } elseif ($user['step'] == "get_codesell") {
     if (in_array($text, $SellDiscount)) {
-        sendmessage($from_id, "❌ این کد تخفیف وجود دارد لطفا از کد تخفیف دیگری استفاده کنید", $backadmin, 'HTML');
+        sendmessage($from_id, "❌ Этот код скидки уже существует, пожалуйста, используйте другой код скидки", $backadmin, 'HTML');
         return;
     }
     if (!preg_match('/^[A-Za-z\d]+$/', $text)) {
@@ -3941,16 +3575,16 @@ if ($text == "🎁 ساخت کد تخفیف") {
     step('getlimitcode', $from_id);
 } elseif ($user['step'] == "getlimitcode") {
     update("DiscountSell", "limitDiscount", $text, "codeDiscount", $user['Processing_value']);
-    sendmessage($from_id, "📌 کد تخفیف برای خرید اول باشد یا همه خرید ها
-    0 : همه خرید ها
-    1 : خرید اول ", $backadmin, 'HTML');
+    sendmessage($from_id, "📌 Код скидки для первой покупки или для всех покупок
+    0 : все покупки
+    1 : первая покупка ", $backadmin, 'HTML');
     step('getusefirst', $from_id);
 } elseif ($user['step'] == "getusefirst") {
     update("DiscountSell", "usefirst", $text, "codeDiscount", $user['Processing_value']);
     sendmessage($from_id, $textbotlang['Admin']['Discount']['SaveCode'], $keyboardadmin, 'HTML');
     step('home', $from_id);
 }
-if ($text == "❌ حذف کد تخفیف") {
+if ($text == "❌ Удалить код скидки") {
     sendmessage($from_id, $textbotlang['Admin']['Discount']['RemoveCode'], $json_list_Discount_list_admin_sell, 'HTML');
     step('remove-Discountsell', $from_id);
 } elseif ($user['step'] == "remove-Discountsell") {
@@ -3964,9 +3598,9 @@ if ($text == "❌ حذف کد تخفیف") {
     sendmessage($from_id, $textbotlang['Admin']['Discount']['RemovedCode'], $shopkeyboard, 'HTML');
     step('home', $from_id);
 }
-if ($text == "👥 تنظیمات زیر مجموعه گیری") {
+if ($text == "👥 Настройки реферальной программы") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $affiliates, 'HTML');
-} elseif ($text == "🎁 وضعیت زیرمجموعه گیری") {
+} elseif ($text == "🎁 Статус реферальной программы") {
     $affiliatesvalue = select("affiliates", "*", null, null, "select")['affiliatesstatus'];
     $keyboardaffiliates = json_encode([
         'inline_keyboard' => [
@@ -3999,14 +3633,14 @@ if ($text == "👥 تنظیمات زیر مجموعه گیری") {
     ]);
     Editmessagetext($from_id, $message_id, $textbotlang['Admin']['Status']['affiliatesStatuson'], $keyboardaffiliates);
 }
-if ($text == "🧮 تنظیم درصد زیرمجموعه") {
+if ($text == "🧮 Установить процент реферальной программы") {
     sendmessage($from_id, $textbotlang['users']['affiliates']['setpercentage'], $backadmin, 'HTML');
     step('setpercentage', $from_id);
 } elseif ($user['step'] == "setpercentage") {
     sendmessage($from_id, $textbotlang['users']['affiliates']['changedpercentage'], $affiliates, 'HTML');
     update("affiliates", "affiliatespercentage", $text);
     step('home', $from_id);
-} elseif ($text == "🏞 تنظیم بنر زیرمجموعه گیری") {
+} elseif ($text == "🏞 Установить баннер реферальной программы") {
     sendmessage($from_id, $textbotlang['users']['affiliates']['banner'], $backadmin, 'HTML');
     step('setbanner', $from_id);
 } elseif ($user['step'] == "setbanner") {
@@ -4018,7 +3652,7 @@ if ($text == "🧮 تنظیم درصد زیرمجموعه") {
     update("affiliates", "id_media", $photoid);
     sendmessage($from_id, $textbotlang['users']['affiliates']['insertbanner'], $affiliates, 'HTML');
     step('home', $from_id);
-} elseif ($text == "🎁 پورسانت بعد از خرید") {
+} elseif ($text == "🎁 Комиссия после покупки") {
     $marzbancommission = select("affiliates", "*", null, null, "select");
     $keyboardcommission = json_encode([
         'inline_keyboard' => [
@@ -4050,7 +3684,7 @@ if ($text == "🧮 تنظیم درصد زیرمجموعه") {
         ]
     ]);
     Editmessagetext($from_id, $message_id, $textbotlang['Admin']['Status']['commissionStatuson'], $keyboardcommission);
-} elseif ($text == "🎁 دریافت هدیه") {
+} elseif ($text == "🎁 Получить подарок") {
     $marzbanDiscountaffiliates = select("affiliates", "*", null, null, "select");
     $keyboardDiscountaffiliates = json_encode([
         'inline_keyboard' => [
@@ -4083,7 +3717,7 @@ if ($text == "🧮 تنظیم درصد زیرمجموعه") {
     ]);
     Editmessagetext($from_id, $message_id, $textbotlang['Admin']['Status']['DiscountaffiliatesStatuson'], $keyboardDiscountaffiliates);
 }
-if ($text == "🌟 مبلغ هدیه استارت") {
+if ($text == "🌟 Сумма подарка при старте") {
     sendmessage($from_id, $textbotlang['users']['affiliates']['priceDiscount'], $backadmin, 'HTML');
     step('getdiscont', $from_id);
 } elseif ($user['step'] == "getdiscont") {
@@ -4096,7 +3730,7 @@ if ($text == "🌟 مبلغ هدیه استارت") {
     if ($requestcheck['status'] == "accept" || $requestcheck['status'] == "reject") {
         telegram('answerCallbackQuery', array(
                 'callback_query_id' => $callback_query_id,
-                'text' => "این درخواست توسط ادمین دیگری بررسی شده است",
+                'text' => "Этот запрос уже был рассмотрен другим администратором",
                 'show_alert' => true,
                 'cache_time' => 5,
             )
@@ -4105,17 +3739,17 @@ if ($text == "🌟 مبلغ هدیه استارت") {
     }
     step("descriptionsrequsts", $from_id);
     update("user", "Processing_value", $usernamepanel, "id", $from_id);
-    sendmessage($from_id, "📌 درخواست رد کردن حذف با موفقیت ثبت شد دلیل عدم تایید را ارسال کنید", $backuser, 'HTML');
+    sendmessage($from_id, "📌 Запрос на отклонение удаления успешно зарегистрирован. Пожалуйста, укажите причину отказа.", $backuser, 'HTML');
 
 } elseif ($user['step'] == "descriptionsrequsts") {
-    sendmessage($from_id, "✅ با موفقیت ثبت گردید", $keyboardadmin, 'HTML');
+    sendmessage($from_id, "✅ Успешно зарегистрировано", $keyboardadmin, 'HTML');
     $nameloc = select("invoice", "*", "username", $user['Processing_value'], "select");
     update("cancel_service", "status", "reject", "username", $user['Processing_value']);
     update("cancel_service", "description", $text, "username", $user['Processing_value']);
     step("home", $from_id);
-    sendmessage($nameloc['id_user'], "❌ کاربری گرامی درخواست حذف شما با نام کاربری  {$user['Processing_value']} موافقت نگردید.
+    sendmessage($nameloc['id_user'], "❌ Уважаемый пользователь, ваш запрос на удаление с именем пользователя {$user['Processing_value']} был отклонен.
             
-            دلیل عدم تایید : $text", null, 'HTML');
+            Причина отказа: $text", null, 'HTML');
 
 } elseif (preg_match('/remoceserviceadmin-(\w+)/', $datain, $dataget)) {
     $username = $dataget[1];
@@ -4123,7 +3757,7 @@ if ($text == "🌟 مبلغ هدیه استارت") {
     if ($requestcheck['status'] == "accept" || $requestcheck['status'] == "reject") {
         telegram('answerCallbackQuery', array(
                 'callback_query_id' => $callback_query_id,
-                'text' => "این درخواست توسط ادمین دیگری بررسی شده است",
+                'text' => "Этот запрос уже был рассмотрен другим администратором",
                 'show_alert' => true,
                 'cache_time' => 5,
             )
@@ -4132,18 +3766,18 @@ if ($text == "🌟 مبلغ هدیه استارت") {
     }
     step("getpricerequests", $from_id);
     update("user", "Processing_value", $username, "id", $from_id);
-    sendmessage($from_id, "💰 مقدار مبلغی که میخواهید به موجودی کاربر اضافه شود را ارسال کنید.", $backuser, 'HTML');
+    sendmessage($from_id, "💰 Пожалуйста, укажите сумму, которую вы хотите добавить к балансу пользователя.", $backuser, 'HTML');
 
 } elseif ($user['step'] == "getpricerequests") {
     if (!ctype_digit($text)) {
-        sendmessage($from_id, "⭕️ ورودی نا معتبر", null, 'HTML');
+        sendmessage($from_id, "⭕️ Неверный ввод", null, 'HTML');
     }
     $nameloc = select("invoice", "*", "username", $user['Processing_value'], "select");
     if ($nameloc['price_product'] < $text) {
-        sendmessage($from_id, "❌ مبلغ بازگشتی بزرگ تر از مبلغ محصول است!", $backuser, 'HTML');
+        sendmessage($from_id, "❌ Сумма возврата больше стоимости продукта!", $backuser, 'HTML');
         return;
     }
-    sendmessage($from_id, "✅ با موفقیت ثبت گردید", $keyboardadmin, 'HTML');
+    sendmessage($from_id, "✅ Успешно зарегистрировано", $keyboardadmin, 'HTML');
     step("home", $from_id);
     $marzban_list_get = mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM marzban_panel WHERE name_panel = '{$nameloc['Service_location']}'"));
     $DataUserOut = $ManagePanel->DataUser($marzban_list_get['name_panel'], $user['Processing_value']);
@@ -4153,27 +3787,27 @@ if ($text == "🌟 مبلغ هدیه استارت") {
     update("cancel_service", "status", "accept", "username", $user['Processing_value']);
     update("invoice", "status", "removedbyadmin", "username", $user['Processing_value']);
     step("home", $from_id);
-    sendmessage($nameloc['id_user'], "✅ کاربری گرامی درخواست حذف شما با نام کاربری  {$user['Processing_value']} موافقت گردید.", null, 'HTML');
+    sendmessage($nameloc['id_user'], "✅ Уважаемый пользователь, ваш запрос на удаление с именем пользователя {$user['Processing_value']} был одобрен.", null, 'HTML');
     $pricecancel = number_format(intval($text));
     if (intval($text) != 0) {
         $Balance_id_cancel = mysqli_fetch_assoc(mysqli_query($connect, "SELECT * FROM user WHERE id = '{$nameloc['id_user']}' LIMIT 1"));
         $Balance_id_cancel_fee = intval($Balance_id_cancel['Balance']) + intval($text);
         update("user", "Balance", $Balance_id_cancel_fee, "id", $nameloc['id_user']);
-        sendmessage($nameloc['id_user'], "💰کاربر گرامی مبلغ $pricecancel تومان به موجودی شما اضافه گردید.", null, 'HTML');
+        sendmessage($nameloc['id_user'], "💰Уважаемый пользователь, сумма $pricecancel рублей была добавлена к вашему балансу.", null, 'HTML');
     }
-    $text_report = "⭕️ یک ادمین سرویس کاربر که درخواست حذف داشت را تایید کرد
+    $text_report = "⭕️ Администратор подтвердил удаление сервиса пользователя по запросу
             
-            اطلاعات کاربر تایید کننده  : 
+            Информация о пользователе, подтвердившем удаление:
             
-            🪪 آیدی عددی : <code>$from_id</code>
-            💰 مبلغ بازگشتی : $pricecancel تومان
-            👤 نام کاربری : $username
-            آیدی عددی درخواست کننده کنسل کردن : {$nameloc['id_user']}";
+            🪪 Числовой ID: <code>$from_id</code>
+            💰 Сумма возврата: $pricecancel рублей
+            👤 Имя пользователя: $username
+            Числовой ID пользователя, запросившего удаление: {$nameloc['id_user']}";
     if (isset($setting['Channel_Report']) &&strlen($setting['Channel_Report']) > 0) {
         sendmessage($setting['Channel_Report'], $text_report, null, 'HTML');
     }
 }
-if ($text == "⏳ قابلیت اولین اتصال") {
+if ($text == "⏳ Возможность первого подключения") {
     $panel = select("marzban_panel", "*", "name_panel", $user['Processing_value'], "select");
     if ($panel['onholdstatus'] == null) {
         update("marzban_panel", "onholdstatus", "offonhold", "name_panel", $user['Processing_value']);
@@ -4211,11 +3845,11 @@ if ($datain == "ononhold") {
     ]);
     Editmessagetext($from_id, $message_id, $textbotlang['Admin']['Status']['onstatus'], $onhold_Status);
 }
-if ($text == "🕚 تنظیمات کرون جاب") {
+if ($text == "🕚 Настройки cron job") {
     sendmessage($from_id, $textbotlang['users']['selectoption'], $keyboardcronjob, 'HTML');
 }
-if($text == "فعال شدن کرون تست"){
-    sendmessage($from_id, "✅ کرون جاب فعال گردید این کرون هر 15 دقیقه اجرا می شود", null, 'HTML');
+if($text == "Активировать cron для теста"){
+    sendmessage($from_id, "✅ Cron job активирован, он будет выполняться каждые 15 минут", null, 'HTML');
     $phpFilePath = "https://$domainhosts/cron/configtest.php";
     $cronCommand = "*/15 * * * * curl $phpFilePath";
     $existingCronCommands = shell_exec('crontab -l');
@@ -4224,8 +3858,8 @@ if($text == "فعال شدن کرون تست"){
         shell_exec($command);
     }
 }
-if($text == "غیر فعال شدن کرون تست"){
-    sendmessage($from_id, "کرون جاب غیرفعال گردید", null, 'HTML');
+if($text == "Деактивировать cron для теста"){
+    sendmessage($from_id, "Cron job деактивирован", null, 'HTML');
     $currentCronJobs = shell_exec("crontab -l");
     $jobToRemove = "*/15 * * * * curl https://$domainhosts/cron/configtest.php";
     $newCronJobs = preg_replace('/'.preg_quote($jobToRemove, '/').'/', '', $currentCronJobs);
@@ -4233,8 +3867,8 @@ if($text == "غیر فعال شدن کرون تست"){
     shell_exec('crontab /tmp/crontab.txt');
     unlink('/tmp/crontab.txt');
 }
-if($text == "فعال شدن کرون حجم"){
-    sendmessage($from_id, "✅ کرون جاب فعال گردید این کرون هر 1 دقیقه اجرا می شود", null, 'HTML');
+if($text == "Активировать cron для объема"){
+    sendmessage($from_id, "✅ Cron job активирован, он будет выполняться каждую минуту", null, 'HTML');
     $phpFilePath = "https://$domainhosts/cron/cronvolume.php";
     $cronCommand = "*/1 * * * * curl $phpFilePath";
     $existingCronCommands = shell_exec('crontab -l');
@@ -4243,8 +3877,8 @@ if($text == "فعال شدن کرون حجم"){
         shell_exec($command);
     }
 }
-if($text == "غیر فعال شدن کرون حجم"){
-    sendmessage($from_id, "کرون جاب غیرفعال گردید", null, 'HTML');
+if($text == "Деактивировать cron для объема"){
+    sendmessage($from_id, "Cron job деактивирован", null, 'HTML');
     $currentCronJobs = shell_exec("crontab -l");
     $jobToRemove = "*/1 * * * * curl https://$domainhosts/cron/cronvolume.php";
     $newCronJobs = preg_replace('/'.preg_quote($jobToRemove, '/').'/', '', $currentCronJobs);
@@ -4252,8 +3886,8 @@ if($text == "غیر فعال شدن کرون حجم"){
     shell_exec('crontab /tmp/crontab.txt');
     unlink('/tmp/crontab.txt');
 }
-if($text == "فعال شدن کرون زمان"){
-    sendmessage($from_id, "✅ کرون جاب فعال گردید این کرون هر 1 دقیقه اجرا می شود", null, 'HTML');
+if($text == "Активировать cron для времени"){
+    sendmessage($from_id, "✅ Cron job активирован, он будет выполняться каждую минуту", null, 'HTML');
     $phpFilePath = "https://$domainhosts/cron/cronday.php";
     $cronCommand = "*/1 * * * * curl $phpFilePath";
     $existingCronCommands = shell_exec('crontab -l');
@@ -4262,8 +3896,8 @@ if($text == "فعال شدن کرون زمان"){
         shell_exec($command);
     }
 }
-if($text == "غیر فعال شدن کرون زمان"){
-    sendmessage($from_id, "کرون جاب غیرفعال گردید", null, 'HTML');
+if($text == "Деактивировать cron для времени"){
+    sendmessage($from_id, "Cron job деактивирован", null, 'HTML');
     $currentCronJobs = shell_exec("crontab -l");
     $jobToRemove = "*/1 * * * * curl https://$domainhosts/cron/cronday.php";
     $newCronJobs = preg_replace('/'.preg_quote($jobToRemove, '/').'/', '', $currentCronJobs);
@@ -4271,8 +3905,8 @@ if($text == "غیر فعال شدن کرون زمان"){
     shell_exec('crontab /tmp/crontab.txt');
     unlink('/tmp/crontab.txt');
 }
-if($text == "فعال شدن کرون حذف"){
-    sendmessage($from_id, "✅ کرون جاب فعال گردید این کرون هر 1 دقیقه اجرا می شود", null, 'HTML');
+if($text == "Активировать cron для удаления"){
+    sendmessage($from_id, "✅ Cron job активирован, он будет выполняться каждую минуту", null, 'HTML');
     $phpFilePath = "https://$domainhosts/cron/removeexpire.php";
     $cronCommand = "*/1 * * * * curl $phpFilePath";
     $existingCronCommands = shell_exec('crontab -l');
@@ -4281,8 +3915,8 @@ if($text == "فعال شدن کرون حذف"){
         shell_exec($command);
     }
 }
-if($text == "غیر فعال شدن کرون حذف"){
-    sendmessage($from_id, "کرون جاب غیرفعال گردید", null, 'HTML');
+if($text == "Деактивировать cron для удаления"){
+    sendmessage($from_id, "Cron job деактивирован", null, 'HTML');
     $currentCronJobs = shell_exec("crontab -l");
     $jobToRemove = "*/1 * * * * curl https://$domainhosts/cron/removeexpire.php";
     $newCronJobs = preg_replace('/'.preg_quote($jobToRemove, '/').'/', '', $currentCronJobs);
@@ -4290,8 +3924,8 @@ if($text == "غیر فعال شدن کرون حذف"){
     shell_exec('crontab /tmp/crontab.txt');
     unlink('/tmp/crontab.txt');
 }
-if ($text == "👁‍🗨 جستجو کاربر") {
-    sendmessage($from_id, "📌 آیدی عددی کاربر را ارسال نمایید", $backadmin, 'HTML');
+if ($text == "👁‍🗨 Поиск пользователя") {
+    sendmessage($from_id, "📌 Отправьте числовой ID пользователя", $backadmin, 'HTML');
     step('show_infos', $from_id);
 } elseif ($user['step'] == "show_infos") {
     if (!in_array($text, $users_ids)) {
@@ -4322,62 +3956,62 @@ if ($text == "👁‍🗨 جستجو کاربر") {
             [['text' => $textbotlang['Admin']['ManageUser']['addbalanceuser'], 'callback_data' => "addbalanceuser_" . $text], ['text' => $textbotlang['Admin']['ManageUser']['lowbalanceuser'], 'callback_data' => "lowbalanceuser_" . $text],],
             [['text' => $textbotlang['Admin']['ManageUser']['banuserlist'], 'callback_data' => "banuserlist_" . $text], ['text' => $textbotlang['Admin']['ManageUser']['unbanuserlist'], 'callback_data' => "unbanuserr_" . $text]],
             [['text' => $textbotlang['Admin']['ManageUser']['confirmnumber'], 'callback_data' => "confirmnumber_" . $text]],
-            [['text' => "➕ محدودیت ساخت اکانت تست", 'callback_data' => "limitusertest_" . $text]],
-            [['text' => "احراز هویت ", 'callback_data' => "verify_" . $text],['text' => "حذف احراز هویت ", 'callback_data' => "verifyun_" . $text]],
+            [['text' => "➕ Ограничение на создание тестового аккаунта", 'callback_data' => "limitusertest_" . $text]],
+            [['text' => "Подтвердить личность", 'callback_data' => "verify_" . $text],['text' => "Удалить подтверждение личности", 'callback_data' => "verifyun_" . $text]],
         ]
     ];
     $keyboardmanage = json_encode($keyboardmanage);
     $user['Balance'] = number_format($user['Balance']);
     $lastmessage = jdate('Y/m/d H:i:s',$user['last_message_time']);
-    $textinfouser = "👀 اطلاعات کاربر:
+    $textinfouser = "👀 Информация о пользователе:
 
-⭕️ وضعیت کاربر : {$user['User_Status']}
-⭕️ نام کاربری کاربر : @{$user['username']}
-⭕️ آیدی عددی کاربر :  <a href = \"tg://user?id=$text\">$text</a>
-⭕️ آخرین زمان  استفاده کاربر از ربات : $lastmessage
-⭕️ محدودیت اکانت تست :  {$user['limit_usertest']} 
-⭕️ وضعیت تایید قانون : $roll_Status
-⭕️ شماره موبایل : <code>{$user['number']}</code>
-⭕️ موجودی کاربر : {$user['Balance']}
-⭕️ تعداد خرید کل کاربر : $dayListSell
-⭕️ مبلغ کل پرداختی  :  $balanceall
-⭕️ جمع کل خرید : $subbuyuser
-⭕️ تعداد زیرمجموعه کاربر : {$user['affiliatescount']}
-⭕  معرف کاربر : {$user['affiliates']}
-⭕  وضعیت احراز کاربرر : {$user['verify']}
+⭕️ Статус пользователя : {$user['User_Status']}
+⭕️ Имя пользователя : @{$user['username']}
+⭕️ Числовой ID пользователя :  <a href = \"tg://user?id=$text\">$text</a>
+⭕️ Последнее использование бота : $lastmessage
+⭕️ Ограничение тестового аккаунта :  {$user['limit_usertest']} 
+⭕️ Статус подтверждения правил : $roll_Status
+⭕️ Номер телефона : <code>{$user['number']}</code>
+⭕️ Баланс пользователя : {$user['Balance']}
+⭕️ Общее количество покупок : $dayListSell
+⭕️ Общая сумма платежей :  $balanceall
+⭕️ Общая сумма покупок : $subbuyuser
+⭕️ Количество рефералов : {$user['affiliatescount']}
+⭕️ Реферал : {$user['affiliates']}
+⭕️ Статус подтверждения личности : {$user['verify']}
 ";
     sendmessage($from_id, $textinfouser, $keyboardmanage, 'HTML');
     sendmessage($from_id, $textbotlang['users']['selectoption'], $keyboardadmin, 'HTML');
     step('home', $from_id);
 }
-if($text == "زمان حذف اکانت"){
-    sendmessage($from_id, "زمان خود را برای حذف اکانت های اکسپایر شده ارسال کنید", $backadmin, 'HTML');
+if($text == "Время удаления аккаунта"){
+    sendmessage($from_id, "Отправьте время для удаления истекших аккаунтов", $backadmin, 'HTML');
     step("gettimeremove",$from_id);
 }elseif($user['step'] == "gettimeremove"){
     if (!ctype_digit($text)) {
-        sendmessage($from_id, "زمان ناعمتبر است", $backadmin, 'HTML');
+        sendmessage($from_id, "Неверное время", $backadmin, 'HTML');
         return;
     }
-    sendmessage($from_id, "زمان با موفقیت تنظیم شد", $keyboardcronjob, 'HTML');
+    sendmessage($from_id, "Время успешно установлено", $keyboardcronjob, 'HTML');
     step("home",$from_id);
     update("setting","removedayc",$text,null,null);
 }
-if ($text == "⚙️ تنظیمات سرویس") {
-    $textsetservice = "📌 برای تنظیم سرویس یک کانفیگ در پنل خود ساخته و  سرویس هایی که میخواهید فعال باشند. را داخل پنل فعال کرده و نام کاربری کانفیگ را ارسال نمایید";
+if ($text == "⚙️ Настройки сервиса") {
+    $textsetservice = "📌 Для настройки сервиса создайте конфигурацию в своей панели и активируйте сервисы, которые хотите использовать, затем отправьте имя пользователя конфигурации";
     sendmessage($from_id, $textsetservice, $backadmin, 'HTML');
     step('getservceid',$from_id);
 } elseif ($user['step'] == "getservceid") {
     $userdata = getuserm($text,$user['Processing_value']);
     if(isset($userdata['detail']) and $userdata['detail'] == "User not found"){
-        sendmessage($from_id,"کاربر در پنل وجود ندارد", null, 'HTML');
+        sendmessage($from_id,"Пользователь не найден в панели", null, 'HTML');
         return;
     }
     update("marzban_panel","proxies",json_encode($userdata['service_ids']),"name_panel",$user['Processing_value']);
     step("home",$from_id);
-    sendmessage($from_id,"✅ اطلاعات با موفقیت تنظیم گردید", $optionMarzneshin, 'HTML');
+    sendmessage($from_id,"✅ Информация успешно установлена", $optionMarzneshin, 'HTML');
 }
-elseif($text == "✏️ ویرایش آموزش"){
-    sendmessage($from_id,"📌 یک آموزش را انتخاب کنید.", $json_list_help, 'HTML');
+elseif($text == "✏️ Редактировать обучение"){
+    sendmessage($from_id,"📌 Выберите обучение.", $json_list_help, 'HTML');
     step("getnameforedite",$from_id);
 }elseif($user['step'] == "getnameforedite"){
     sendmessage($from_id, $textbotlang['users']['selectoption'], $helpedit, 'HTML');
@@ -4385,27 +4019,27 @@ elseif($text == "✏️ ویرایش آموزش"){
     step("home",$from_id);
 
 }
-elseif($text == "ویرایش نام") {
-    sendmessage($from_id, "نام جدید را ارسال کنید", $backadmin, 'HTML');
+elseif($text == "Редактировать имя") {
+    sendmessage($from_id, "Отправьте новое имя", $backadmin, 'HTML');
     step('changenamehelp', $from_id);
 }elseif($user['step'] == "changenamehelp") {
     if(strlen($text) >= 150){
-        sendmessage($from_id, "❌ نام آموزش باید کمتر از 150 کاراکتر باشد", null, 'HTML');
+        sendmessage($from_id, "❌ Имя должно быть меньше 150 символов", null, 'HTML');
         return;
     }
     update("help","name_os",$text,"name_os",$user['Processing_value']);
-    sendmessage($from_id, "✅ نام آموزش بروزرسانی شد", $json_list_helpkey, 'HTML');
+    sendmessage($from_id, "✅ Имя обновлено", $json_list_helpkey, 'HTML');
     step('home', $from_id);
-}elseif($text == "ویرایش توضیحات") {
-    sendmessage($from_id, "توضیحات جدید را ارسال کنید", $backadmin, 'HTML');
+}elseif($text == "Редактировать описание") {
+    sendmessage($from_id, "Отправьте новое описание", $backadmin, 'HTML');
     step('changedeshelp', $from_id);
 }elseif($user['step'] == "changedeshelp") {
     update("help","Description_os",$text,"name_os",$user['Processing_value']);
-    sendmessage($from_id, "✅ توضیحات  آموزش بروزرسانی شد", $helpedit, 'HTML');
+    sendmessage($from_id, "✅ Описание обновлено", $helpedit, 'HTML');
     step('home', $from_id);
 }
-elseif($text == "ویرایش رسانه") {
-    sendmessage($from_id, "تصویر یا فیلم جدید را ارسال کنید", $backadmin, 'HTML');
+elseif($text == "Редактировать медиа") {
+    sendmessage($from_id, "Отправьте новое изображение или видео", $backadmin, 'HTML');
     step('changemedia', $from_id);
 }elseif($user['step'] == "changemedia") {
     if ($photo) {
@@ -4415,19 +4049,19 @@ elseif($text == "ویرایش رسانه") {
         if(isset($videoid))update("help","Media_os",$videoid, "name_os",$user['Processing_value']);
         update("help","type_Media_os","video", "name_os",$user['Processing_value']);
     }
-    sendmessage($from_id, "✅ توضیحات  آموزش بروزرسانی شد", $helpedit, 'HTML');
+    sendmessage($from_id, "✅ Медиа обновлено", $helpedit, 'HTML');
     step('home', $from_id);
-}elseif($text == "⚙️ تنظیم پروتکل و اینباند"){
-    $textsetprotocol = "📌 برای تنظیم اینباند  و پروتکل باید یک کانفیگ در پنل خود ساخته و  پروتکل و اینباند هایی که میخواهید فعال باشند. را داخل پنل فعال کرده و نام کاربری کانفیگ را ارسال نمایید
+}elseif($text == "⚙️ Настроить протокол и входящий трафик"){
+    $textsetprotocol = "📌 Для настройки входящего трафика и протокола создайте конфигурацию в своей панели и активируйте нужные протоколы и входящие трафики, затем отправьте имя пользователя конфигурации
     
-⚠️ در صورتی که ادمین غیرسودو هستید بجای ارسال نام کاربری  یک لینک ساب ارسال نمایید";
+⚠️ Если вы не супер-админ, отправьте ссылку на подписку вместо имени пользователя";
     sendmessage($from_id, $textsetprotocol, $backadmin, 'HTML');
     step("setinboundandprotocol",$from_id);
 }elseif($user['step'] == "setinboundandprotocol"){
     if (filter_var($text, FILTER_VALIDATE_URL)) {
         $data = json_decode(outputlunk("$text/info"),true);
         if(!isset($data['proxies'])){
-            sendmessage($from_id, "❌ لینک ساب نامعتبر است", null, 'html');
+            sendmessage($from_id, "❌ Неверная ссылка на подписку", null, 'html');
             return;
         }
         $DataUserOut = $data;
@@ -4454,18 +4088,18 @@ elseif($text == "ویرایش رسانه") {
     }
     update("marzban_panel","inbounds",json_encode($DataUserOut['inbounds']),"name_panel",$user['Processing_value']);
     update("marzban_panel","proxies",json_encode($DataUserOut['proxies']),"name_panel",$user['Processing_value']);
-    sendmessage($from_id, "✅ اینباند و پروتکل های شما با موفقیت تنظیم گردیدند.", $optionMarzban, 'HTML');
+    sendmessage($from_id, "✅ Входящий трафик и протоколы успешно настроены.", $optionMarzban, 'HTML');
     step("home",$from_id);
-}elseif($text == "⚙️ وضعیت قابلیت ها") {
-    if($setting['Bot_Status'] == "✅  ربات روشن است") {
+}elseif($text == "⚙️ Статус возможностей") {
+    if($setting['Bot_Status'] == "✅ Бот включен") {
         update("setting","Bot_Status","1");
-    }elseif($setting['Bot_Status'] == "❌ ربات خاموش است") {
+    }elseif($setting['Bot_Status'] == "❌ Бот выключен") {
         update("setting","Bot_Status","0");
     }
 
-    if($setting['roll_Status'] == "✅ تایید قانون روشن است") {
+    if($setting['roll_Status'] == "✅ Подтверждение правил включено") {
         update("setting","roll_Status","1");
-    }elseif($setting['roll_Status'] == "❌ تایید قوانین خاموش است") {
+    }elseif($setting['roll_Status'] == "❌ Подтверждение правил выключено") {
         update("setting","roll_Status","0");
     }
 
@@ -4475,21 +4109,21 @@ elseif($text == "ویرایش رسانه") {
         update("setting","NotUser","0");
     }
 
-    if($setting['help_Status'] == "✅ آموزش فعال است") {
+    if($setting['help_Status'] == "✅ Обучение включено") {
         update("setting","help_Status","1");
-    }elseif($setting['help_Status'] == "❌ آموزش غیرفعال است") {
+    }elseif($setting['help_Status'] == "❌ Обучение выключено") {
         update("setting","help_Status","0");
     }
 
-    if($setting['get_number'] == "✅ تایید شماره موبایل روشن است") {
+    if($setting['get_number'] == "✅ Подтверждение номера включено") {
         update("setting","get_number","1");
-    }elseif($setting['get_number'] == "❌ احرازهویت شماره تماس غیرفعال است") {
+    }elseif($setting['get_number'] == "❌ Подтверждение номера выключено") {
         update("setting","get_number","0");
     }
 
-    if($setting['iran_number'] == "✅ احرازشماره ایرانی روشن است") {
+    if($setting['iran_number'] == "✅ Подтверждение иранского номера включено") {
         update("setting","iran_number","1");
-    }elseif($setting['iran_number'] == "❌ بررسی شماره ایرانی غیرفعال است") {
+    }elseif($setting['iran_number'] == "❌ Подтверждение иранского номера выключено") {
         update("setting","iran_number","0");
     }
     $setting = select("setting", "*");
@@ -4670,21 +4304,21 @@ elseif(preg_match('/^editstsuts-(.*)-(.*)/', $datain, $dataget)) {
     $iduser = $dataget[1];
     $userunverify = select("user", "*", "id", $iduser, "select");
     if ($userunverify['verify'] == "1") {
-        sendmessage($from_id, "کاربر از قبل احراز شده است", $backadmin, 'HTML');
+        sendmessage($from_id, "Пользователь уже подтвержден", $backadmin, 'HTML');
         return;
     }
     update("user", "verify", "1", "id", $iduser);
-    sendmessage($from_id,"✅ کاربر با موفقیت احراز گردید.", $keyboardadmin, 'HTML');
+    sendmessage($from_id,"✅ Пользователь успешно подтвержден.", $keyboardadmin, 'HTML');
     step('home', $from_id);
 }elseif (preg_match('/verifyun_(\w+)/', $datain, $dataget)) {
     $iduser = $dataget[1];
     $userunverify = select("user", "*", "id", $iduser, "select");
     if ($userunverify['verify'] == "0") {
-        sendmessage($from_id, "کاربر از قبل احراز نبوده است", $backadmin, 'HTML');
+        sendmessage($from_id, "Пользователь уже не подтвержден", $backadmin, 'HTML');
         return;
     }
     update("user", "verify", "0", "id", $iduser);
-    sendmessage($from_id,"✅ کاربر با موفقیت از احراز خارج گردید.", $keyboardadmin, 'HTML');
+    sendmessage($from_id,"✅ Пользователь успешно снят с подтверждения.", $keyboardadmin, 'HTML');
     step('home', $from_id);
 }
 $connect->close();

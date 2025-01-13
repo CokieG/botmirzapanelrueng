@@ -35,14 +35,14 @@ $stmt->execute();
     ][$get_username_Check['status']];
     
         if ($day <= intval("-".$setting['removedayc'])) {
-            $textre = "📌 کاربر گرامی بدلیل عدم تمدید، سرویس {$resultss['username']}  از لیست سرویس های شما حذف گردید
+            $textre = "📌 Уважаемый пользователь, ваш сервис {$resultss['username']} был удален из списка ваших сервисов из-за отсутствия продления.
 
-🌟 جهت تهیه سرویس جدید از بخش خرید سرویس اقدام فرمایید";
+    🌟 Для приобретения нового сервиса, пожалуйста, перейдите в раздел покупки сервиса.";
             sendmessage($resultss['id_user'], $textre, null, 'HTML');
             update("invoice","status","removeTime", "username",$line);
             $ManagePanel->RemoveUser($resultss['Service_location'], $line);
-            $text_report = "❌ سرویس با نام کاربری $line حذف گردید
-            دلیل حذف : $status_var ";
+            $text_report = "❌ Сервис с именем пользователя $line был удален
+            Причина удаления: $status_var ";
             if (strlen($setting['Channel_Report']) > 0) {
             sendmessage($setting['Channel_Report'], $text_report, null, 'HTML');
         }

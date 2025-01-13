@@ -31,37 +31,37 @@ $response = curl_exec($curl);
 $response = json_decode($response,true);
 curl_close($curl);
  } 
- if($response['payment_status'] == "finished"){
-     $setting = select("setting", "*");
-    $payment_status = "پرداخت موفق";
-    $price = intval($usd*$response['price_amount']);
-    $dec_payment_status = "از انجام تراکنش متشکریم!";
-    $Payment_report = select("Payment_report", "price", "id_order", $response['order_id'],"select");
+if($response['payment_status'] == "finished"){
+    $setting = select("setting", "*");
+    $payment_status = "Платеж успешен";
+    $price = intval($usd * $response['price_amount']);
+    $dec_payment_status = "Спасибо за транзакцию!";
+    $Payment_report = select("Payment_report", "price", "id_order", $response['order_id'], "select");
     $Balance_id = select("user", "*", "id", $Payment_report['id_user'], "select");
     if($Payment_report['payment_Status'] != "paid"){
-    DirectPayment($Payment_report['id_order']);
+        DirectPayment($Payment_report['id_order']);
     update("user","Processing_value","0", "id",$Balance_id['id']);
     update("user","Processing_value_one","0", "id",$Balance_id['id']);
     update("user","Processing_value_tow","0", "id",$Balance_id['id']);
     update("Payment_report","payment_Status","paid","id_order",$Payment_report['id_order']);
-$text_report = "💵 پرداخت جدید
+$text_report = "💵 Новый платеж
         
-آیدی عددی کاربر : {$Payment_report['id_user']}
-مبلغ تراکنش $price
-روش پرداخت :  درگاه آقای پرداخت";
+Цифровой ID пользователя : {$Payment_report['id_user']}
+Сумма транзакции $price
+Метод оплаты : через Mr. Payment";
     if (strlen($setting['Channel_Report']) > 0) {
         sendmessage($setting['Channel_Report'], $text_report, null, 'HTML');
     }
  }
  }
  else{
-     $payment_status = "پرداخت ناموفق بوده است";
+     $payment_status = "Платеж не был успешным";
      $dec_payment_status = "";
  }
 ?>
 <html>
 <head>
-    <title>فاکتور پرداخت</title>
+    <title>Счет на оплату</title>
     <style>
     @font-face {
     font-family: 'vazir';
@@ -112,11 +112,11 @@ $text_report = "💵 پرداخت جدید
 <body>
     <div class="confirmation-box">
         <h1><?php echo $payment_status ?></h1>
-        <p>شماره تراکنش:<span><?php echo $NP_id ?></span></p>
-        <p>مبلغ پرداختی:  <span><?php echo $response['price_amount'] ?></span> دلار</p>
-        <p>تاریخ: <span>  <?php echo jdate('Y/m/d')  ?>  </span></p>
+        <p>Номер транзакции:<span><?php echo $NP_id ?></span></p>
+        <p>Сумма платежа:  <span><?php echo $response['price_amount'] ?></span> долларов</p>
+        <p>Дата: <span>  <?php echo jdate('Y/m/d')  ?>  </span></p>
         <p><?php echo $dec_payment_status ?></p>
-        <a class = "btn" href = "https://t.me/<?php echo $usernamebot ?>">بازگشت به ربات</a>
+        <a class = "btn" href = "https://t.me/<?php echo $usernamebot ?>">Вернуться к боту</a>
     </div>
 </body>
 </html>

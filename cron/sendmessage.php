@@ -13,7 +13,7 @@ $info = json_decode(file_get_contents('info'),true);
 $count = 0;
 if(count($userid) == 0){
     if(isset($info['id_admin'])){
-    sendmessage($info['id_admin'], "📌 پیام برای تمامی کاربران ارسال گردید.", null, 'HTML');
+    sendmessage($info['id_admin'], "📌 Сообщение было отправлено всем пользователям.", null, 'HTML');
     unlink('info');
     }
     return;
